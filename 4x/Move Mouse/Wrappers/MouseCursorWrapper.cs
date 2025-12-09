@@ -1,32 +1,53 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using static ellabi.Wrappers.NativeMethods;
 
 namespace ellabi.Wrappers
 {
-    public static class MouseCursorWrapper
+    public class MouseCursorWrapper
     {
-        public static void MoveFromCurrentLocation(Point point)
+        private HashSet<Point> _previousLocations = new HashSet<Point>();
+
+        public bool BreakOnUserActivity { get; set; }
+
+        public bool UserActivityDetected { get; private set; }
+
+        public void MoveFromCurrentLocation(Point point)
         {
             try
             {
-                var mi = new NativeMethods.MOUSEINPUT
+                if (BreakOnUserActivity && (_previousLocations.Any() && !_previousLocations.Contains(GetCursorPosition())))
                 {
-                    dx = point.X,
-                    dy = point.Y,
-                    mouseData = 0,
-                    time = 0,
-                    dwFlags = NativeMethods.MouseEventFlags.MOVE,
-                    dwExtraInfo = UIntPtr.Zero
-                };
-                var input = new NativeMethods.INPUT
+                    UserActivityDetected = true;
+                }
+                else
                 {
-                    mi = mi,
-                    type = Convert.ToInt32(NativeMethods.Win32Consts.INPUT_MOUSE)
-                };
-                NativeMethods.SendInput(1, ref input, Marshal.SizeOf(input));
+                    NativeMethods.INPUT[] inputs = new NativeMethods.INPUT[]
+                    {
+                        new NativeMethods.INPUT
+                        {
+                            type = (int)InputType.Mouse,
+                            u = new InputUnion
+                            {
+                                mi = new NativeMethods.MOUSEINPUT
+                                {
+                                    dx = point.X,
+                                    dy = point.Y,
+                                    mouseData = 0,
+                                    time = 0,
+                                    dwFlags = NativeMethods.MouseEventFlags.MOVE,
+                                    dwExtraInfo = IntPtr.Zero
+                                }
+                            }
+                        }
+                    };
+                    NativeMethods.SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(NativeMethods.INPUT)));
+                    _previousLocations.Add(GetCursorPosition());
+                }
             }
             catch (Exception ex)
             {
@@ -34,76 +55,152 @@ namespace ellabi.Wrappers
             }
         }
 
-        public static void MoveNorth(int distance, int speed)
+        public void MoveNorth(int distance, int speed)
         {
             for (int i = 0; i < distance; i++)
             {
                 MoveFromCurrentLocation(new Point(0, -1));
-                Thread.Sleep(speed);
+
+                if (UserActivityDetected)
+                {
+                    break;
+                }
+                else
+                {
+                    Thread.Sleep(speed);
+                }
             }
         }
 
-        public static void MoveNorthEast(int distance, int speed)
+        public void MoveNorthEast(int distance, int speed)
         {
             for (int i = 0; i < distance; i++)
             {
                 MoveFromCurrentLocation(new Point(1, -1));
-                Thread.Sleep(speed);
+
+                if (UserActivityDetected)
+                {
+                    break;
+                }
+                else
+                {
+                    Thread.Sleep(speed);
+                }
             }
         }
 
-        public static void MoveEast(int distance, int speed)
+        public void MoveEast(int distance, int speed)
         {
             for (int i = 0; i < distance; i++)
             {
                 MoveFromCurrentLocation(new Point(1, 0));
-                Thread.Sleep(speed);
+
+                if (UserActivityDetected)
+                {
+                    break;
+                }
+                else
+                {
+                    Thread.Sleep(speed);
+                }
             }
         }
 
-        public static void MoveSouthEast(int distance, int speed)
+        public void MoveSouthEast(int distance, int speed)
         {
             for (int i = 0; i < distance; i++)
             {
                 MoveFromCurrentLocation(new Point(1, 1));
-                Thread.Sleep(speed);
+
+                if (UserActivityDetected)
+                {
+                    break;
+                }
+                else
+                {
+                    Thread.Sleep(speed);
+                }
             }
         }
 
-        public static void MoveSouth(int distance, int speed)
+        public void MoveSouth(int distance, int speed)
         {
             for (int i = 0; i < distance; i++)
             {
                 MoveFromCurrentLocation(new Point(0, 1));
-                Thread.Sleep(speed);
+
+                if (UserActivityDetected)
+                {
+                    break;
+                }
+                else
+                {
+                    Thread.Sleep(speed);
+                }
             }
         }
 
-        public static void MoveSouthWest(int distance, int speed)
+        public void MoveSouthWest(int distance, int speed)
         {
             for (int i = 0; i < distance; i++)
             {
                 MoveFromCurrentLocation(new Point(-1, 1));
-                Thread.Sleep(speed);
+
+                if (UserActivityDetected)
+                {
+                    break;
+                }
+                else
+                {
+                    Thread.Sleep(speed);
+                }
             }
         }
 
-        public static void MoveWest(int distance, int speed)
+        public void MoveWest(int distance, int speed)
         {
             for (int i = 0; i < distance; i++)
             {
                 MoveFromCurrentLocation(new Point(-1, 0));
-                Thread.Sleep(speed);
+
+                if (UserActivityDetected)
+                {
+                    break;
+                }
+                else
+                {
+                    Thread.Sleep(speed);
+                }
             }
         }
 
-        public static void MoveNorthWest(int distance, int speed)
+        public void MoveNorthWest(int distance, int speed)
         {
             for (int i = 0; i < distance; i++)
             {
                 MoveFromCurrentLocation(new Point(-1, -1));
-                Thread.Sleep(speed);
+
+                if (UserActivityDetected)
+                {
+                    break;
+                }
+                else
+                {
+                    Thread.Sleep(speed);
+                }
             }
+        }
+
+        public Point GetCursorPosition()
+        {
+            var pt = new NativeMethods.Win32Point();
+
+            if (NativeMethods.GetCursorPos(ref pt))
+            {
+                return new Point(pt.X, pt.Y);
+            }
+
+            throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
         }
     }
 }

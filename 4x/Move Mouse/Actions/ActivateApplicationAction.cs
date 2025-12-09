@@ -98,15 +98,13 @@ namespace ellabi.Actions
             RefreshApplicationsCommand = new RelayCommand(param => RefreshApplications());
         }
 
-        public override bool CanExecute()
-        {
-            return IsValid;
-        }
+        public override bool CanExecute() => IsValid;
 
         public override void Execute()
         {
             try
             {
+                IntervalExecutionCount++;
                 StaticCode.Logger?.Here().Information(ToString());
                 string windowName = null;
 

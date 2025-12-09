@@ -14,6 +14,7 @@ namespace ellabi.Actions
         private CursorDirection _direction;
         private CursorSpeed _speed;
         private int _delay;
+        private bool _abortIfUserActivityDetected;
 
         public enum CursorDirection
         {
@@ -141,6 +142,16 @@ namespace ellabi.Actions
             }
         }
 
+        public bool AbortIfUserActivityDetected
+        {
+            get => _abortIfUserActivityDetected;
+            set
+            {
+                _abortIfUserActivityDetected = value;
+                OnPropertyChanged();
+            }
+        }
+
         public MoveMouseCursorAction()
         {
             _distance = 10;
@@ -150,10 +161,7 @@ namespace ellabi.Actions
             InterruptsIdleTime = true;
         }
 
-        public override bool CanExecute()
-        {
-            return IsValid;
-        }
+        public override bool CanExecute() => IsValid;
 
         public override void Execute()
         {
@@ -162,54 +170,55 @@ namespace ellabi.Actions
                 IntervalExecutionCount++;
                 StaticCode.Logger?.Here().Information(ToString());
                 int distance = Random ? new Random().Next(Convert.ToInt32(Distance), Convert.ToInt32(UpperDistance)) : Distance;
+                var mcw = new MouseCursorWrapper() { BreakOnUserActivity = AbortIfUserActivityDetected };
 
                 switch (Direction)
                 {
                     case CursorDirection.Square:
-                        MouseCursorWrapper.MoveEast(distance, _delay);
-                        MouseCursorWrapper.MoveSouth(distance, _delay);
-                        MouseCursorWrapper.MoveWest(distance, _delay);
-                        MouseCursorWrapper.MoveNorth(distance, _delay);
+                        mcw.MoveEast(distance, _delay);
+                        if (!mcw.UserActivityDetected) mcw.MoveSouth(distance, _delay);
+                        if (!mcw.UserActivityDetected) mcw.MoveWest(distance, _delay);
+                        if (!mcw.UserActivityDetected) mcw.MoveNorth(distance, _delay);
                         break;
                     case CursorDirection.North:
-                        MouseCursorWrapper.MoveNorth(distance, _delay);
+                        mcw.MoveNorth(distance, _delay);
                         break;
                     case CursorDirection.East:
-                        MouseCursorWrapper.MoveEast(distance, _delay);
+                        mcw.MoveEast(distance, _delay);
                         break;
                     case CursorDirection.South:
-                        MouseCursorWrapper.MoveSouth(distance, _delay);
+                        mcw.MoveSouth(distance, _delay);
                         break;
                     case CursorDirection.West:
-                        MouseCursorWrapper.MoveWest(distance, _delay);
+                        mcw.MoveWest(distance, _delay);
                         break;
                     case CursorDirection.NorthEast:
-                        MouseCursorWrapper.MoveNorthEast(distance, _delay);
+                        mcw.MoveNorthEast(distance, _delay);
                         break;
                     case CursorDirection.SouthEast:
-                        MouseCursorWrapper.MoveSouthEast(distance, _delay);
+                        mcw.MoveSouthEast(distance, _delay);
                         break;
                     case CursorDirection.SouthWest:
-                        MouseCursorWrapper.MoveSouthWest(distance, _delay);
+                        mcw.MoveSouthWest(distance, _delay);
                         break;
                     case CursorDirection.NorthWest:
-                        MouseCursorWrapper.MoveNorthWest(distance, _delay);
+                        mcw.MoveNorthWest(distance, _delay);
                         break;
                     case CursorDirection.UpAndDown:
-                        MouseCursorWrapper.MoveNorth(distance, _delay);
-                        MouseCursorWrapper.MoveSouth(distance, _delay);
+                        mcw.MoveNorth(distance, _delay);
+                        if (!mcw.UserActivityDetected) mcw.MoveSouth(distance, _delay);
                         break;
                     case CursorDirection.DownAndUp:
-                        MouseCursorWrapper.MoveSouth(distance, _delay);
-                        MouseCursorWrapper.MoveNorth(distance, _delay);
+                        mcw.MoveSouth(distance, _delay);
+                        if (!mcw.UserActivityDetected) mcw.MoveNorth(distance, _delay);
                         break;
                     case CursorDirection.LeftAndRight:
-                        MouseCursorWrapper.MoveWest(distance, _delay);
-                        MouseCursorWrapper.MoveEast(distance, _delay);
+                        mcw.MoveWest(distance, _delay);
+                        if (!mcw.UserActivityDetected) mcw.MoveEast(distance, _delay);
                         break;
                     case CursorDirection.RightAndLeft:
-                        MouseCursorWrapper.MoveEast(distance, _delay);
-                        MouseCursorWrapper.MoveWest(distance, _delay);
+                        mcw.MoveEast(distance, _delay);
+                        if (!mcw.UserActivityDetected) mcw.MoveWest(distance, _delay);
                         break;
                     case CursorDirection.Random:
                         int distanceRemaining = distance;
@@ -232,37 +241,39 @@ namespace ellabi.Actions
                             switch (direction)
                             {
                                 case 1:
-                                    MouseCursorWrapper.MoveNorth(randomDistance, _delay);
+                                    if (!mcw.UserActivityDetected) mcw.MoveNorth(randomDistance, _delay);
                                     break;
                                 case 2:
-                                    MouseCursorWrapper.MoveEast(randomDistance, _delay);
+                                    if (!mcw.UserActivityDetected) mcw.MoveEast(randomDistance, _delay);
                                     break;
                                 case 3:
-                                    MouseCursorWrapper.MoveSouth(randomDistance, _delay);
+                                    if (!mcw.UserActivityDetected) mcw.MoveSouth(randomDistance, _delay);
                                     break;
                                 case 4:
-                                    MouseCursorWrapper.MoveWest(randomDistance, _delay);
+                                    if (!mcw.UserActivityDetected) mcw.MoveWest(randomDistance, _delay);
                                     break;
                                 case 5:
-                                    MouseCursorWrapper.MoveNorthEast(randomDistance, _delay);
+                                    if (!mcw.UserActivityDetected) mcw.MoveNorthEast(randomDistance, _delay);
                                     break;
                                 case 6:
-                                    MouseCursorWrapper.MoveSouthEast(randomDistance, _delay);
+                                    if (!mcw.UserActivityDetected) mcw.MoveSouthEast(randomDistance, _delay);
                                     break;
                                 case 7:
-                                    MouseCursorWrapper.MoveSouthWest(randomDistance, _delay);
+                                    if (!mcw.UserActivityDetected) mcw.MoveSouthWest(randomDistance, _delay);
                                     break;
                                 case 8:
-                                    MouseCursorWrapper.MoveNorthWest(randomDistance, _delay);
+                                    if (!mcw.UserActivityDetected) mcw.MoveNorthWest(randomDistance, _delay);
                                     break;
                             }
                         }
 
                         break;
                     case CursorDirection.None:
-                        MouseCursorWrapper.MoveFromCurrentLocation(new Point());
+                        mcw.MoveFromCurrentLocation(new Point());
                         break;
                 }
+
+                Aborted = mcw.UserActivityDetected;
             }
             catch (Exception ex)
             {

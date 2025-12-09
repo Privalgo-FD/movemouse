@@ -84,15 +84,13 @@ namespace ellabi.Actions
             InterruptsIdleTime = true;
         }
 
-        public override bool CanExecute()
-        {
-            return IsValid;
-        }
+        public override bool CanExecute() => IsValid;
 
         public override void Execute()
         {
             try
             {
+                IntervalExecutionCount++;
                 StaticCode.Logger?.Here().Information(ToString());
                 var direction = (Direction == WheelDirection.Random) ? WheelDirectionValues.OrderBy(wd => Guid.NewGuid()).FirstOrDefault() : Direction;
                 uint distance = Random ? (uint)(new Random().Next(Convert.ToInt32(Distance), Convert.ToInt32(UpperDistance))) : Distance;

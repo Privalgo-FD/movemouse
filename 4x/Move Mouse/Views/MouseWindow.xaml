@@ -38,73 +38,87 @@
         </Style>
         <Storyboard x:Key="FlyingButtonAnimation1">
             <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:1.75"/>
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="414" Duration="0:0:1.75" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="420" Duration="0:0:1.75" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="FlyingImageAnimation1">
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="-54" Duration="0:0:1.75" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="-60" Duration="0:0:1.75" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="FlyingButtonAnimation2">
             <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:1.6" BeginTime="0:0:0.15"/>
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="342" Duration="0:0:1.6" BeginTime="0:0:0.15" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="360" Duration="0:0:1.6" BeginTime="0:0:0.15" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="FlyingImageAnimation2">
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="18" Duration="0:0:1.6" BeginTime="0:0:0.15" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="0" Duration="0:0:1.6" BeginTime="0:0:0.15" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="FlyingButtonAnimation3">
             <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:1.45" BeginTime="0:0:0.3"/>
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="270" Duration="0:0:1.45" BeginTime="0:0:0.3" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="300" Duration="0:0:1.45" BeginTime="0:0:0.3" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="FlyingImageAnimation3">
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="90" Duration="0:0:1.45" BeginTime="0:0:0.3" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="60" Duration="0:0:1.45" BeginTime="0:0:0.3" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="FlyingButtonAnimation4">
             <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:1.3" BeginTime="0:0:0.45"/>
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="198" Duration="0:0:1.3" BeginTime="0:0:0.45" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="240" Duration="0:0:1.3" BeginTime="0:0:0.45" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="FlyingImageAnimation4">
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="162" Duration="0:0:1.3" BeginTime="0:0:0.45" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="120" Duration="0:0:1.3" BeginTime="0:0:0.45" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="FlyingButtonAnimation5">
             <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:1.15" BeginTime="0:0:0.6"/>
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="126" Duration="0:0:1.15" BeginTime="0:0:0.6" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="180" Duration="0:0:1.15" BeginTime="0:0:0.6" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="FlyingImageAnimation5">
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="234" Duration="0:0:1.15" BeginTime="0:0:0.6" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="180" Duration="0:0:1.15" BeginTime="0:0:0.6" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+        </Storyboard>
+        <Storyboard x:Key="FlyingButtonAnimation6">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:1" BeginTime="0:0:0.6"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="120" Duration="0:0:1.15" BeginTime="0:0:0.6" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+        </Storyboard>
+        <Storyboard x:Key="FlyingImageAnimation6">
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="240" Duration="0:0:1.15" BeginTime="0:0:0.6" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="InstantButtonAnimation1">
             <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:0"/>
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="414" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="420" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="InstantImageAnimation1">
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="-54" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="-60" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="InstantButtonAnimation2">
             <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:0"/>
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="342" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="360" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="InstantImageAnimation2">
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="18" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="0" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="InstantButtonAnimation3">
             <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:0"/>
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="270" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="300" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="InstantImageAnimation3">
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="90" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="60" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="InstantButtonAnimation4">
             <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:0"/>
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="198" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="240" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="InstantImageAnimation4">
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="162" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="120" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="InstantButtonAnimation5">
             <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:0"/>
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="126" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="180" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="InstantImageAnimation5">
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="234" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="180" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+        </Storyboard>
+        <Storyboard x:Key="InstantButtonAnimation6">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:0"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="120" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
+        </Storyboard>
+        <Storyboard x:Key="InstantImageAnimation6">
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="360" To="240" Duration="0:0:0" AccelerationRatio="0.5" DecelerationRatio="0.5"/>
         </Storyboard>
         <!--<Storyboard x:Key="ButtonFadeInAnimation">
             <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:0.5"/>
@@ -317,7 +331,7 @@
                                     <Setter Property="Margin" Value="7.5"/>
                                 </Style>
                             </StackPanel.Resources>
-                            <Button Click="SettingsButton_OnClick">
+                            <Button AutomationProperties.Name="Settings" Click="SettingsButton_OnClick">
                                 <Image>
                                     <Image.Style>
                                         <Style TargetType="Image" BasedOn="{StaticResource StandardImageStyle}">
@@ -331,7 +345,7 @@
                                     </Image.Style>
                                 </Image>
                             </Button>
-                            <Button Click="HelpButton_OnClick">
+                            <Button AutomationProperties.Name="Help" Click="HelpButton_OnClick">
                                 <Image>
                                     <Image.Style>
                                         <Style TargetType="Image" BasedOn="{StaticResource StandardImageStyle}">
@@ -345,7 +359,7 @@
                                     </Image.Style>
                                 </Image>
                             </Button>
-                            <Button Click="PayPalButton_OnClick">
+                            <Button AutomationProperties.Name="Pay Pal" Click="PayPalButton_OnClick">
                                 <Image>
                                     <Image.Style>
                                         <Style TargetType="Image" BasedOn="{StaticResource StandardImageStyle}">
@@ -359,7 +373,7 @@
                                     </Image.Style>
                                 </Image>
                             </Button>
-                            <Button Click="TwitterButton_OnClick">
+                            <Button AutomationProperties.Name="Twitter" Click="TwitterButton_OnClick">
                                 <Image>
                                     <Image.Style>
                                         <Style TargetType="Image" BasedOn="{StaticResource StandardImageStyle}">
@@ -373,7 +387,7 @@
                                     </Image.Style>
                                 </Image>
                             </Button>
-                            <Button Click="HomeButton_OnClick">
+                            <Button AutomationProperties.Name="Home" Click="HomeButton_OnClick">
                                 <Image>
                                     <Image.Style>
                                         <Style TargetType="Image" BasedOn="{StaticResource StandardImageStyle}">
@@ -387,7 +401,7 @@
                                     </Image.Style>
                                 </Image>
                             </Button>
-                            <Button Click="CloseButton_OnClick">
+                            <Button AutomationProperties.Name="Close" Click="CloseButton_OnClick">
                                 <Image>
                                     <Image.Style>
                                         <Style TargetType="Image" BasedOn="{StaticResource StandardImageStyle}">
@@ -447,7 +461,7 @@
                 </Image>
                 <!-- todo Can't move window if theme image showing -->
                 <!--<Image Source="{Binding Path=ThemeImage, NotifyOnTargetUpdated=True}" Margin="-35"/>-->
-                <Button Command="{Binding Path=StartStopToggleCommand, NotifyOnTargetUpdated=True}" Style="{StaticResource NoChromeButton}" Cursor="Hand" PreviewMouseDown="MouseButton_OnPreviewMouseDown" FocusVisualStyle="{x:Null}"/>
+                <Button AutomationProperties.Name="Toggle start stop" Command="{Binding Path=StartStopToggleCommand, NotifyOnTargetUpdated=True}" Style="{StaticResource NoChromeButton}" Cursor="Hand" PreviewMouseDown="MouseButton_OnPreviewMouseDown" FocusVisualStyle="{x:Null}"/>
             </Grid>
             <TextBlock Text="{Binding Path=CurrentState, NotifyOnTargetUpdated=True}" Foreground="{StaticResource StandardLightTextSolidColorBrush}" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,20">
                 <TextBlock.Style>
@@ -462,7 +476,7 @@
                 </TextBlock.Style>
             </TextBlock>
         </Grid>
-        <Button Name="FlyingTwitterButton" Style="{StaticResource FlyingButtonStyle}" MouseEnter="UIElement_OnMouseEnter" MouseLeave="UIElement_OnMouseLeave" Click="TwitterButton_OnClick">
+        <Button AutomationProperties.Name="Twitter" Name="FlyingTwitterButton" Style="{StaticResource FlyingButtonStyle}" MouseEnter="UIElement_OnMouseEnter" MouseLeave="UIElement_OnMouseLeave" Click="TwitterButton_OnClick">
             <Image Name="FlyingTwitterImage">
                 <Image.Style>
                     <Style TargetType="Image" BasedOn="{StaticResource FlyingImageStyle}">
@@ -476,7 +490,7 @@
                 </Image.Style>
             </Image>
         </Button>
-        <Button Name="FlyingSettingsButton" Style="{StaticResource FlyingButtonStyle}" MouseEnter="UIElement_OnMouseEnter" MouseLeave="UIElement_OnMouseLeave" Click="SettingsButton_OnClick">
+        <Button AutomationProperties.Name="Settings" Name="FlyingSettingsButton" Style="{StaticResource FlyingButtonStyle}" MouseEnter="UIElement_OnMouseEnter" MouseLeave="UIElement_OnMouseLeave" Click="SettingsButton_OnClick">
             <Image Name="FlyingSettingsImage">
                 <Image.Style>
                     <Style TargetType="Image" BasedOn="{StaticResource FlyingImageStyle}">
@@ -490,7 +504,7 @@
                 </Image.Style>
             </Image>
         </Button>
-        <Button Name="FlyingCloseButton" Style="{StaticResource FlyingButtonStyle}" MouseEnter="UIElement_OnMouseEnter" MouseLeave="UIElement_OnMouseLeave" Click="CloseButton_OnClick">
+        <Button AutomationProperties.Name="Close" Name="FlyingCloseButton" Style="{StaticResource FlyingButtonStyle}" MouseEnter="UIElement_OnMouseEnter" MouseLeave="UIElement_OnMouseLeave" Click="CloseButton_OnClick">
             <Image Name="FlyingCloseImage">
                 <Image.Style>
                     <Style TargetType="Image" BasedOn="{StaticResource FlyingImageStyle}">
@@ -504,7 +518,21 @@
                 </Image.Style>
             </Image>
         </Button>
-        <Button Name="FlyingPayPalButton" Style="{StaticResource FlyingButtonStyle}" MouseEnter="UIElement_OnMouseEnter" MouseLeave="UIElement_OnMouseLeave" Click="PayPalButton_OnClick">
+        <Button AutomationProperties.Name="Minimise" Name="FlyingMinimiseButton" Style="{StaticResource FlyingButtonStyle}" MouseEnter="UIElement_OnMouseEnter" MouseLeave="UIElement_OnMouseLeave" Click="MinimiseButton_OnClick">
+            <Image Name="FlyingMinimiseImage">
+                <Image.Style>
+                    <Style TargetType="Image" BasedOn="{StaticResource FlyingImageStyle}">
+                        <Setter Property="Source" Value="/Resources/Minimise_Dark_64x64.png"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Source" Value="/Resources/Minimise_Light_64x64.png"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Image.Style>
+            </Image>
+        </Button>
+        <Button AutomationProperties.Name="Pay Pal" Name="FlyingPayPalButton" Style="{StaticResource FlyingButtonStyle}" MouseEnter="UIElement_OnMouseEnter" MouseLeave="UIElement_OnMouseLeave" Click="PayPalButton_OnClick">
             <Image Name="FlyingPayPalImage">
                 <Image.Style>
                     <Style TargetType="Image" BasedOn="{StaticResource FlyingImageStyle}">
@@ -518,7 +546,7 @@
                 </Image.Style>
             </Image>
         </Button>
-        <!--<Button Name="FlyingContactButton" Style="{StaticResource FlyingButtonStyle}" MouseEnter="UIElement_OnMouseEnter" MouseLeave="UIElement_OnMouseLeave" Click="ContactButton_OnClick">
+        <!--<Button AutomationProperties.Name="Contact" Name="FlyingContactButton" Style="{StaticResource FlyingButtonStyle}" MouseEnter="UIElement_OnMouseEnter" MouseLeave="UIElement_OnMouseLeave" Click="ContactButton_OnClick">
             <Image Name="FlyingContactImage">
                 <Image.Style>
                     <Style TargetType="Image" BasedOn="{StaticResource FlyingImageStyle}">
@@ -532,7 +560,7 @@
                 </Image.Style>
             </Image>
         </Button>-->
-        <!--<Button Name="FlyingHomeButton" Style="{StaticResource FlyingButtonStyle}" MouseEnter="UIElement_OnMouseEnter" MouseLeave="UIElement_OnMouseLeave" Click="HomeButton_OnClick">
+        <!--<Button AutomationProperties.Name="Home" Name="FlyingHomeButton" Style="{StaticResource FlyingButtonStyle}" MouseEnter="UIElement_OnMouseEnter" MouseLeave="UIElement_OnMouseLeave" Click="HomeButton_OnClick">
             <Image Name="FlyingHomeImage">
                 <Image.Style>
                     <Style TargetType="Image" BasedOn="{StaticResource FlyingImageStyle}">
@@ -546,7 +574,7 @@
                 </Image.Style>
             </Image>
         </Button>-->
-        <Button Name="FlyingHelpButton" Style="{StaticResource FlyingButtonStyle}" MouseEnter="UIElement_OnMouseEnter" MouseLeave="UIElement_OnMouseLeave" Click="HelpButton_OnClick">
+        <Button AutomationProperties.Name="Help" Name="FlyingHelpButton" Style="{StaticResource FlyingButtonStyle}" MouseEnter="UIElement_OnMouseEnter" MouseLeave="UIElement_OnMouseLeave" Click="HelpButton_OnClick">
             <Image Name="FlyingHomeImage">
                 <Image.Style>
                     <Style TargetType="Image" BasedOn="{StaticResource FlyingImageStyle}">

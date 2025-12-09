@@ -59,15 +59,13 @@ namespace ellabi.Actions
             InterruptsIdleTime = true;
         }
 
-        public override bool CanExecute()
-        {
-            return IsValid;
-        }
+        public override bool CanExecute() => IsValid;
 
         public override void Execute()
         {
             try
             {
+                IntervalExecutionCount++;
                 StaticCode.Logger?.Here().Information(ToString());
 
                 switch (_button)

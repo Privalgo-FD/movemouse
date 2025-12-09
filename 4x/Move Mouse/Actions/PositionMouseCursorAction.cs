@@ -67,15 +67,13 @@ namespace ellabi.Actions
             StartCursorTrackingCommand = new RelayCommand(param => StartCursorTracking());
         }
 
-        public override bool CanExecute()
-        {
-            return IsValid;
-        }
+        public override bool CanExecute() => IsValid;
 
         public override void Execute()
         {
             try
             {
+                IntervalExecutionCount++;
                 StaticCode.Logger?.Here().Information(ToString());
                 NativeMethods.SetCursorPos(X, Y);
             }
@@ -113,10 +111,9 @@ namespace ellabi.Actions
                 }
                 else
                 {
-                    var w32Mouse = new NativeMethods.Win32Point();
-                    NativeMethods.GetCursorPos(ref w32Mouse);
-                    X = w32Mouse.X;
-                    Y = w32Mouse.Y;
+                    var position = new MouseCursorWrapper().GetCursorPosition();
+                    X = position.X;
+                    Y = position.Y;
                 }
             }
             catch (Exception ex)

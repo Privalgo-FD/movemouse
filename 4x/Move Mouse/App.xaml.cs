@@ -12,6 +12,10 @@ namespace ellabi
     {
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
+            //foreach (var key in ellabi.Classes.VirtualKey.GetVirtualKeys()) { 
+            //    Debug.WriteLine($"VirtualKeys[{String.Format("0x{0:X}", key.Code)}] = new KeyValuePair<string, string>(\"{key.Name}\", \"{key.Description}\");");
+            //}
+
             try
             {
                 using (new Mutex(true, "f45b30b9-9e65-4d33-a2bc-d6ba6a7500bd", out var createdNew))

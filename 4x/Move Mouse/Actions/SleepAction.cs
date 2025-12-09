@@ -57,15 +57,13 @@ namespace ellabi.Actions
             _upperSeconds = 2;
         }
 
-        public override bool CanExecute()
-        {
-            return IsValid;
-        }
+        public override bool CanExecute() => IsValid;
 
         public override void Execute()
         {
             try
             {
+                IntervalExecutionCount++;
                 var sleep = TimeSpan.FromSeconds(Random ? new Random().Next(Convert.ToInt32(Seconds), Convert.ToInt32(UpperSeconds)) : Seconds);
                 StaticCode.Logger?.Here().Information(ToString());
                 StaticCode.Logger?.Here().Information(sleep.ToString());

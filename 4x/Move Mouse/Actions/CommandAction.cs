@@ -53,15 +53,13 @@ namespace ellabi.Actions
             }
         }
 
-        public override bool CanExecute()
-        {
-            return IsValid;
-        }
+        public override bool CanExecute() => IsValid;
 
         public override void Execute()
         {
             try
             {
+                IntervalExecutionCount++;
                 StaticCode.Logger?.Here().Information(ToString());
 
                 if (File.Exists(FilePath))

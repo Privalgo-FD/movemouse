@@ -1,11 +1,12 @@
-﻿using System;
-using System.Diagnostics;
-using System.Windows;
-using System.Windows.Input;
-using ellabi.Actions;
+﻿using ellabi.Actions;
 using ellabi.Schedules;
 using ellabi.ViewModels;
 using Microsoft.Win32;
+using System;
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ellabi.Views
 {
@@ -20,6 +21,7 @@ namespace ellabi.Views
         {
             try
             {
+                ((SettingsWindowViewModel)DataContext).StartSystemIdleTimer();
                 ((SettingsWindowViewModel)DataContext).RefreshStartupTask();
             }
             catch (Exception ex)
@@ -100,6 +102,20 @@ namespace ellabi.Views
             try
             {
                 ((SettingsWindowViewModel)DataContext).AddAction(typeof(PositionMouseCursorAction));
+            }
+            catch (Exception ex)
+            {
+                StaticCode.Logger?.Here().Error(ex.Message);
+            }
+        }
+
+        private void AddKeystrokeAction_OnClick(object sender, RoutedEventArgs e)
+        {
+            StaticCode.Logger?.Here().Debug(String.Empty);
+
+            try
+            {
+                ((SettingsWindowViewModel)DataContext).AddAction(typeof(KeystrokeAction));
             }
             catch (Exception ex)
             {
@@ -383,6 +399,33 @@ namespace ellabi.Views
                 powershell.StartInfo.FileName = "powershell";
                 powershell.StartInfo.Arguments = $"-ExecutionPolicy Bypass -Command \"$Host.UI.RawUI.WindowTitle = 'Move Mouse Log';Get-Content -Path:'{StaticCode.LogPath}' -Tail:500 -Wait";
                 powershell.Start();
+            }
+            catch (Exception ex)
+            {
+                StaticCode.Logger?.Here().Error(ex.Message);
+            }
+        }
+
+        private void SettingsWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            try
+            {
+                ((SettingsWindowViewModel)DataContext).StopSystemIdleTimer();
+            }
+            catch (Exception ex)
+            {
+                StaticCode.Logger?.Here().Error(ex.Message);
+            }
+        }
+
+        private void VirtualKeyTextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                if (((SettingsWindowViewModel)DataContext).SelectedAction is KeystrokeAction keystrokeAction)
+                {
+                    ((SettingsWindowViewModel)DataContext).AddKeystroke(Convert.ToInt32(((TextBlock)sender).Tag));
+                }
             }
             catch (Exception ex)
             {

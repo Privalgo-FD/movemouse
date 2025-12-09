@@ -12,10 +12,9 @@
         xmlns:classes="clr-namespace:ellabi.Classes"
         xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
         mc:Ignorable="d"
-        Title="Move Mouse Settings" Height="442" Width="688" Icon="/Resources/Mouse.ico" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" WindowStyle="None" MouseDown="SettingsWindow_OnMouseDown" ShowActivated="True" Loaded="SettingsWindow_OnLoaded">
+        Title="Move Mouse Settings" Height="482" Width="688" Icon="/Resources/Mouse.ico" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" WindowStyle="None" MouseDown="SettingsWindow_OnMouseDown" ShowActivated="True" Loaded="SettingsWindow_OnLoaded">
     <Grid Background="{StaticResource StandardWindowBackground}">
         <Grid.Resources>
-            <!--<converters:ObjectToTypeStringConverter x:Key="ObjectToTypeStringConverter"/>-->
             <converters:DoubleDividedByTwoConverter x:Key="DoubleDividedByTwoConverter"/>
             <converters:StartupTaskStateToBoolConverter x:Key="StartupTaskStateToBoolConverter"/>
             <converters:CursorDirectionToStealthModeBoolConverter x:Key="CursorDirectionToStealthModeBoolConverter"/>
@@ -147,7 +146,7 @@
                     </Setter>
                 </Style>
             </TabControl.Resources>
-            <TabItem>
+            <TabItem AutomationProperties.Name="Actions">
                 <TabItem.Resources>
                     <DataTemplate DataType="{x:Type actions:MoveMouseCursorAction}">
                         <StackPanel Style="{StaticResource ActionStackPanelStyle}">
@@ -373,6 +372,34 @@
                             </TextBlock>
                         </StackPanel>
                     </DataTemplate>
+                    <DataTemplate DataType="{x:Type actions:KeystrokeAction}">
+                        <StackPanel Style="{StaticResource ActionStackPanelStyle}">
+                            <Image>
+                                <Image.Style>
+                                    <Style TargetType="Image" BasedOn="{StaticResource ActionStackPanelImageStyle}">
+                                        <Setter Property="Source" Value="/Resources/KeystrokeAction_Light_128x128.png"/>
+                                        <!--<Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=IsValid}" Value="False">
+                                                <Setter Property="Source" Value="/Resources/Exclamation_64x64.png"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>-->
+                                    </Style>
+                                </Image.Style>
+                            </Image>
+                            <TextBlock>
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource ActionStackPanelTextStyle}">
+                                        <Setter Property="Text" Value="{Binding Path=Name, NotifyOnTargetUpdated=True}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=Name, NotifyOnTargetUpdated=True}" Value="{x:Null}">
+                                                <Setter Property="Text" Value="Send Keystrokes"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
                 </TabItem.Resources>
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
@@ -398,136 +425,165 @@
                     <Grid Margin="10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="10"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="20"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <ListView Grid.Column="0" ItemsSource="{Binding Path=Settings.Actions, NotifyOnTargetUpdated=True}" SelectedItem="{Binding Path=SelectedAction, NotifyOnTargetUpdated=True}" SelectionMode="Single" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0" Background="Transparent" BorderThickness="1" BorderBrush="{StaticResource StandardBorderBrush}">
-                            <ListView.Resources>
-                                <Style TargetType="ScrollViewer" BasedOn="{StaticResource StandardScrollViewerStyle}"/>
-                            </ListView.Resources>
-                        </ListView>
-                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                            <Button Style="{StaticResource TaskActionButtonStyle}" Command="{Binding Path=MoveUpSelectedActionCommand, NotifyOnTargetUpdated=True}">
-                                <Image>
-                                    <Image.Style>
-                                        <Style TargetType="Image" BasedOn="{StaticResource TaskActionButtonImageStyle}">
-                                            <Setter Property="Source" Value="/Resources/UpArrow_Dark_64x64.png"/>
-                                            <Style.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Source" Value="/Resources/UpArrow_Light_64x64.png"/>
-                                                </Trigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Image.Style>
-                                </Image>
-                            </Button>
-                            <Button Click="AddActionButton_OnClick">
-                                <Button.Style>
-                                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource TaskActionButtonStyle}">
-                                        <Style.Triggers>
-                                            <EventTrigger RoutedEvent="Click">
-                                                <EventTrigger.Actions>
-                                                    <BeginStoryboard>
-                                                        <Storyboard>
-                                                            <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
-                                                                <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True"/>
-                                                            </BooleanAnimationUsingKeyFrames>
-                                                        </Storyboard>
-                                                    </BeginStoryboard>
-                                                </EventTrigger.Actions>
-                                            </EventTrigger>
-                                        </Style.Triggers>
+                        <Grid Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="10"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <ListView Grid.Row="0" ItemsSource="{Binding Path=Settings.Actions, NotifyOnTargetUpdated=True}" SelectedItem="{Binding Path=SelectedAction, NotifyOnTargetUpdated=True}" SelectionMode="Single" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0" Background="Transparent" BorderThickness="1" BorderBrush="{StaticResource StandardBorderBrush}">
+                                <ListView.Resources>
+                                    <Style TargetType="ScrollViewer" BasedOn="{StaticResource StandardScrollViewerStyle}"/>
+                                </ListView.Resources>
+                            </ListView>
+                            <StackPanel Grid.Row="2" HorizontalAlignment="Center" Orientation="Horizontal">
+                                <StackPanel.Resources>
+                                    <Style TargetType="Button" BasedOn="{StaticResource TaskActionButtonStyle}">
+                                        <Setter Property="Margin" Value="5,0,5,0"/>
                                     </Style>
-                                </Button.Style>
-                                <Button.ContextMenu>
-                                    <ContextMenu StaysOpen="True" Style="{StaticResource ContextMenuStyle}">
-                                        <MenuItem Header="Move Mouse Cursor" Click="AddMoveMouseCursorAction_OnClick" Style="{StaticResource TaskActionButtonMenuItemStyle}">
-                                            <MenuItem.Icon>
-                                                <Image Source="/Resources/MoveMouseCursorAction_Light_128x128.png" Style="{StaticResource TaskActionButtonMenuImageStyle}"/>
-                                            </MenuItem.Icon>
-                                        </MenuItem>
-                                        <MenuItem Header="Click Mouse Button" Click="AddClickMouseAction_OnClick" Style="{StaticResource TaskActionButtonMenuItemStyle}">
-                                            <MenuItem.Icon>
-                                                <Image Source="/Resources/ClickMouseAction_Light_128x128.png" Style="{StaticResource TaskActionButtonMenuImageStyle}"/>
-                                            </MenuItem.Icon>
-                                        </MenuItem>
-                                        <MenuItem Header="Scroll Mouse Wheel" Click="AddScrollMouseAction_OnClick" Style="{StaticResource TaskActionButtonMenuItemStyle}">
-                                            <MenuItem.Icon>
-                                                <Image Source="/Resources/ScrollMouseWheelAction_Light_128x128.png" Style="{StaticResource TaskActionButtonMenuImageStyle}"/>
-                                            </MenuItem.Icon>
-                                        </MenuItem>
-                                        <MenuItem Header="Position Mouse Cursor" Click="AddPositionMouseCursorAction_OnClick" Style="{StaticResource TaskActionButtonMenuItemStyle}">
-                                            <MenuItem.Icon>
-                                                <Image Source="/Resources/PositionMouseCursorAction_Light_128x128.png" Style="{StaticResource TaskActionButtonMenuImageStyle}"/>
-                                            </MenuItem.Icon>
-                                        </MenuItem>
-                                        <MenuItem Header="Activate Application" Click="ActivateApplicationAction_OnClick" Style="{StaticResource TaskActionButtonMenuItemStyle}">
-                                            <MenuItem.Icon>
-                                                <Image Source="/Resources/ActivateWindowAction_Light_128x128.png" Style="{StaticResource TaskActionButtonMenuImageStyle}"/>
-                                            </MenuItem.Icon>
-                                        </MenuItem>
-                                        <MenuItem Header="Run Command" Click="AddCommandAction_OnClick" Style="{StaticResource TaskActionButtonMenuItemStyle}">
-                                            <MenuItem.Icon>
-                                                <Image Source="/Resources/CommandAction_Light_128x128.png" Style="{StaticResource TaskActionButtonMenuImageStyle}"/>
-                                            </MenuItem.Icon>
-                                        </MenuItem>
-                                        <MenuItem Header="PowerShell Script" Click="AddScriptAction_OnClick" Style="{StaticResource TaskActionButtonMenuItemStyle}">
-                                            <MenuItem.Icon>
-                                                <Image Source="/Resources/ScriptAction_Light_128x128.png" Style="{StaticResource TaskActionButtonMenuImageStyle}"/>
-                                            </MenuItem.Icon>
-                                        </MenuItem>
-                                        <MenuItem Header="Sleep" Click="AddSleepAction_OnClick" Style="{StaticResource TaskActionButtonMenuItemStyle}">
-                                            <MenuItem.Icon>
-                                                <Image Source="/Resources/SleepAction_Light_128x128.png" Style="{StaticResource TaskActionButtonMenuImageStyle}"/>
-                                            </MenuItem.Icon>
-                                        </MenuItem>
-                                    </ContextMenu>
-                                </Button.ContextMenu>
-                                <Image>
-                                    <Image.Style>
-                                        <Style TargetType="Image" BasedOn="{StaticResource TaskActionButtonImageStyle}">
-                                            <Setter Property="Source" Value="/Resources/ActionsAdd_Dark_64x64.png"/>
+                                </StackPanel.Resources>
+                                <Button AutomationProperties.Name="Add action" Click="AddActionButton_OnClick">
+                                    <Button.Style>
+                                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
                                             <Style.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Source" Value="/Resources/ActionsAdd_Light_64x64.png"/>
-                                                </Trigger>
+                                                <EventTrigger RoutedEvent="Click">
+                                                    <EventTrigger.Actions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
+                                                                    <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True"/>
+                                                                </BooleanAnimationUsingKeyFrames>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger.Actions>
+                                                </EventTrigger>
                                             </Style.Triggers>
                                         </Style>
-                                    </Image.Style>
-                                </Image>
-                            </Button>
-                            <Button Style="{StaticResource TaskActionButtonStyle}" Command="{Binding Path=RemoveSelectedActionCommand, NotifyOnTargetUpdated=True}">
-                                <Image>
-                                    <Image.Style>
-                                        <Style TargetType="Image" BasedOn="{StaticResource TaskActionButtonImageStyle}">
-                                            <Setter Property="Source" Value="/Resources/ActionsRemove_Dark_64x64.png"/>
-                                            <Style.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Source" Value="/Resources/ActionsRemove_Light_64x64.png"/>
-                                                </Trigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Image.Style>
-                                </Image>
-                            </Button>
-                            <Button Style="{StaticResource TaskActionButtonStyle}" Command="{Binding Path=MoveDownSelectedActionCommand, NotifyOnTargetUpdated=True}">
-                                <Image>
-                                    <Image.Style>
-                                        <Style TargetType="Image" BasedOn="{StaticResource TaskActionButtonImageStyle}">
-                                            <Setter Property="Source" Value="/Resources/DownArrow_Dark_64x64.png"/>
-                                            <Style.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Source" Value="/Resources/DownArrow_Light_64x64.png"/>
-                                                </Trigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Image.Style>
-                                </Image>
-                            </Button>
-                        </StackPanel>
-                        <ContentPresenter Grid.Column="4" Content="{Binding Path=SelectedAction, NotifyOnTargetUpdated=True}">
+                                    </Button.Style>
+                                    <Button.ContextMenu>
+                                        <ContextMenu StaysOpen="True" Style="{StaticResource ContextMenuStyle}">
+                                            <MenuItem Header="Move Mouse Cursor" Click="AddMoveMouseCursorAction_OnClick" Style="{StaticResource TaskActionButtonMenuItemStyle}">
+                                                <MenuItem.Icon>
+                                                    <Image Source="/Resources/MoveMouseCursorAction_Light_128x128.png" Style="{StaticResource TaskActionButtonMenuImageStyle}"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Click Mouse Button" Click="AddClickMouseAction_OnClick" Style="{StaticResource TaskActionButtonMenuItemStyle}">
+                                                <MenuItem.Icon>
+                                                    <Image Source="/Resources/ClickMouseAction_Light_128x128.png" Style="{StaticResource TaskActionButtonMenuImageStyle}"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Scroll Mouse Wheel" Click="AddScrollMouseAction_OnClick" Style="{StaticResource TaskActionButtonMenuItemStyle}">
+                                                <MenuItem.Icon>
+                                                    <Image Source="/Resources/ScrollMouseWheelAction_Light_128x128.png" Style="{StaticResource TaskActionButtonMenuImageStyle}"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Position Mouse Cursor" Click="AddPositionMouseCursorAction_OnClick" Style="{StaticResource TaskActionButtonMenuItemStyle}">
+                                                <MenuItem.Icon>
+                                                    <Image Source="/Resources/PositionMouseCursorAction_Light_128x128.png" Style="{StaticResource TaskActionButtonMenuImageStyle}"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Send Keystrokes" Click="AddKeystrokeAction_OnClick" Style="{StaticResource TaskActionButtonMenuItemStyle}">
+                                                <MenuItem.Icon>
+                                                    <Image Source="/Resources/KeystrokeAction_Light_128x128.png" Style="{StaticResource TaskActionButtonMenuImageStyle}"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Activate Application" Click="ActivateApplicationAction_OnClick" Style="{StaticResource TaskActionButtonMenuItemStyle}">
+                                                <MenuItem.Icon>
+                                                    <Image Source="/Resources/ActivateWindowAction_Light_128x128.png" Style="{StaticResource TaskActionButtonMenuImageStyle}"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Run Command" Click="AddCommandAction_OnClick" Style="{StaticResource TaskActionButtonMenuItemStyle}">
+                                                <MenuItem.Icon>
+                                                    <Image Source="/Resources/CommandAction_Light_128x128.png" Style="{StaticResource TaskActionButtonMenuImageStyle}"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="PowerShell Script" Click="AddScriptAction_OnClick" Style="{StaticResource TaskActionButtonMenuItemStyle}">
+                                                <MenuItem.Icon>
+                                                    <Image Source="/Resources/ScriptAction_Light_128x128.png" Style="{StaticResource TaskActionButtonMenuImageStyle}"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Sleep" Click="AddSleepAction_OnClick" Style="{StaticResource TaskActionButtonMenuItemStyle}">
+                                                <MenuItem.Icon>
+                                                    <Image Source="/Resources/SleepAction_Light_128x128.png" Style="{StaticResource TaskActionButtonMenuImageStyle}"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </ContextMenu>
+                                    </Button.ContextMenu>
+                                    <Image>
+                                        <Image.Style>
+                                            <Style TargetType="Image" BasedOn="{StaticResource TaskActionButtonImageStyle}">
+                                                <Setter Property="Source" Value="/Resources/ActionsAdd_Dark_64x64.png"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Source" Value="/Resources/ActionsAdd_Light_64x64.png"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Image.Style>
+                                    </Image>
+                                </Button>
+                                <Button AutomationProperties.Name="Copy selected action" Command="{Binding Path=CopySelectedActionCommand, NotifyOnTargetUpdated=True}">
+                                    <Image>
+                                        <Image.Style>
+                                            <Style TargetType="Image" BasedOn="{StaticResource TaskActionButtonImageStyle}">
+                                                <Setter Property="Source" Value="/Resources/Copy_Dark_64x64.png"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Source" Value="/Resources/Copy_Light_64x64.png"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Image.Style>
+                                    </Image>
+                                </Button>
+                                <Button AutomationProperties.Name="Remove selected action" Command="{Binding Path=RemoveSelectedActionCommand, NotifyOnTargetUpdated=True}">
+                                    <Image>
+                                        <Image.Style>
+                                            <Style TargetType="Image" BasedOn="{StaticResource TaskActionButtonImageStyle}">
+                                                <Setter Property="Source" Value="/Resources/ActionsRemove_Dark_64x64.png"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Source" Value="/Resources/ActionsRemove_Light_64x64.png"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Image.Style>
+                                    </Image>
+                                </Button>
+                                <Button AutomationProperties.Name="Move action up" Style="{StaticResource TaskActionButtonStyle}" Command="{Binding Path=MoveUpSelectedActionCommand, NotifyOnTargetUpdated=True}">
+                                    <Image>
+                                        <Image.Style>
+                                            <Style TargetType="Image" BasedOn="{StaticResource TaskActionButtonImageStyle}">
+                                                <Setter Property="Source" Value="/Resources/UpArrow_Dark_64x64.png"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Source" Value="/Resources/UpArrow_Light_64x64.png"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Image.Style>
+                                    </Image>
+                                </Button>
+                                <Button AutomationProperties.Name="Move action down" Command="{Binding Path=MoveDownSelectedActionCommand, NotifyOnTargetUpdated=True}">
+                                    <Image>
+                                        <Image.Style>
+                                            <Style TargetType="Image" BasedOn="{StaticResource TaskActionButtonImageStyle}">
+                                                <Setter Property="Source" Value="/Resources/DownArrow_Dark_64x64.png"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Source" Value="/Resources/DownArrow_Light_64x64.png"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Image.Style>
+                                    </Image>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                        <ContentPresenter Grid.Column="2" Content="{Binding Path=SelectedAction, NotifyOnTargetUpdated=True}">
                             <ContentPresenter.Resources>
                                 <GridLength x:Key="LabelColumnWidth">60</GridLength>
                                 <GridLength x:Key="LabelColumnHeight">22</GridLength>
@@ -541,7 +597,7 @@
                                         <RowDefinition Height="10"/>
                                     </Grid.RowDefinitions>
                                     <TextBlock Grid.Column="0" Grid.Row="0" Text="Name" Style="{StaticResource LabelTextBlockStyle}"/>
-                                    <xctk:WatermarkTextBox Grid.Column="1" Grid.Row="0" Text="{Binding Path=Name, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}" Watermark="Optional"/>
+                                    <xctk:WatermarkTextBox AutomationProperties.Name="Optional action name" Grid.Column="1" Grid.Row="0" Text="{Binding Path=Name, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}" Watermark="Optional"/>
                                 </Grid>
                                 <Grid x:Key="DistanceGrid" x:Shared="False">
                                     <StackPanel Orientation="Vertical">
@@ -677,7 +733,7 @@
                                             <ColumnDefinition Width="10"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <ComboBox Grid.Column="0" SelectedItem="{Binding Path=Trigger, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Path=EventTriggerValues}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}"/>
+                                        <ComboBox AutomationProperties.Name="Trigger" Grid.Column="0" SelectedItem="{Binding Path=Trigger, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Path=EventTriggerValues}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}"/>
                                         <Image Grid.Column="2" Source="/Resources/Help_Dark_64x64.png" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" Height="22" ToolTipService.ShowDuration="{x:Static sys:Int32.MaxValue}" ToolTip="Start - Run this action when Move Mouse starts.&#xD;&#xA;&#xD;&#xA;Interval - Run this action at each interval.&#xD;&#xA;&#xD;&#xA;Stop - Run this action when Move Mouse stops&#xD;&#xA;or pauses (does not include blackouts)."/>
                                     </Grid>
                                 </Grid>
@@ -708,7 +764,7 @@
                                     </Grid.Style>
                                     <TextBlock Grid.Column="0" Grid.Row="0" Text="Repeat" Style="{StaticResource LabelTextBlockStyle}"/>
                                     <toggleSwitch:HorizontalToggleSwitch Grid.Column="1" Grid.Row="0" IsChecked="{Binding Path=Repeat, NotifyOnTargetUpdated=True, Mode=TwoWay}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}"/>
-                                    <ComboBox Grid.Column="3" SelectedItem="{Binding Path=RepeatMode, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Path=IntervalRepeatModeValues}">
+                                    <ComboBox AutomationProperties.Name="Repeat mode" Grid.Column="3" SelectedItem="{Binding Path=RepeatMode, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Path=IntervalRepeatModeValues}">
                                         <ComboBox.Style>
                                             <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
                                                 <Setter Property="IsEnabled" Value="False"/>
@@ -764,7 +820,7 @@
                                         <RowDefinition Height="{StaticResource LabelColumnHeight}"/>
                                         <RowDefinition Height="10"/>
                                     </Grid.RowDefinitions>
-                                    <Button Grid.Column="1" Content="Test" Command="{Binding Path=ExecuteCommand, NotifyOnTargetUpdated=True}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}"/>
+                                    <Button AutomationProperties.Name="Test action" Grid.Column="1" Content="Test" Command="{Binding Path=ExecuteCommand, NotifyOnTargetUpdated=True}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}"/>
                                 </Grid>
                                 <DataTemplate DataType="{x:Type actions:ActivateApplicationAction}">
                                     <StackPanel Orientation="Vertical">
@@ -785,7 +841,7 @@
                                                     <ColumnDefinition Width="10"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <ComboBox Grid.Column="0" SelectedItem="{Binding Path=Mode, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Path=SearchModeValues}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}"/>
+                                                <ComboBox AutomationProperties.Name="Application search mode" Grid.Column="0" SelectedItem="{Binding Path=Mode, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Path=SearchModeValues}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}"/>
                                                 <Image Grid.Column="2" Source="/Resources/Help_Dark_64x64.png" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" ToolTipService.ShowDuration="{x:Static sys:Int32.MaxValue}" ToolTip="Window - Uses the window name to locate the application. This&#xD;&#xA;will give finer control when you have multiple instances of the&#xD;&#xA;same application open.&#xD;&#xA;&#xD;&#xA;Process - Uses the process name to locate the application. A&#xD;&#xA;good option if your application's window name frequently&#xD;&#xA;changes, such as a web browser."/>
                                             </Grid>
                                         </Grid>
@@ -805,7 +861,7 @@
                                                     <ColumnDefinition Width="10"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <ComboBox Grid.Column="0" ItemsSource="{Binding Path=AvailableApplications, NotifyOnTargetUpdated=True}" Text="{Binding Path=Application, NotifyOnTargetUpdated=True}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}">
+                                                <ComboBox AutomationProperties.Name="Available applications" Grid.Column="0" ItemsSource="{Binding Path=AvailableApplications, NotifyOnTargetUpdated=True}" Text="{Binding Path=Application, NotifyOnTargetUpdated=True}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}">
                                                     <ComboBox.Style>
                                                         <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
                                                             <Setter Property="IsEditable" Value="False"/>
@@ -841,7 +897,7 @@
                                                         </Grid>
                                                     </Image.ToolTip>
                                                 </Image>
-                                                <!--<Button Grid.Column="2" HorizontalAlignment="Left" Style="{StaticResource NoChromeButton}" Command="{Binding Path=RefreshApplicationsCommand}" ToolTip="Refresh applications" Cursor="Hand" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}">
+                                                <!--<Button AutomationProperties.Name="Refresh applications" Grid.Column="2" HorizontalAlignment="Left" Style="{StaticResource NoChromeButton}" Command="{Binding Path=RefreshApplicationsCommand}" ToolTip="Refresh applications" Cursor="Hand" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}">
                                                     <Image Name="RefreshImage" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality">
                                                         <Image.RenderTransform>
                                                             <RotateTransform CenterX="{Binding ElementName=RefreshImage, Path=ActualWidth, Converter={StaticResource DoubleDividedByTwoConverter}}" CenterY="{Binding ElementName=RefreshImage, Path=ActualHeight, Converter={StaticResource DoubleDividedByTwoConverter}}"/>
@@ -886,7 +942,7 @@
                                                 <RowDefinition Height="10"/>
                                             </Grid.RowDefinitions>
                                             <TextBlock Grid.Column="0" Grid.Row="0" Text="Button" Style="{StaticResource LabelTextBlockStyle}"/>
-                                            <ComboBox Grid.Column="1" Grid.Row="0" SelectedItem="{Binding Path=Button, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Path=MouseButtonValues}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}"/>
+                                            <ComboBox AutomationProperties.Name="Mouse button" Grid.Column="1" Grid.Row="0" SelectedItem="{Binding Path=Button, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Path=MouseButtonValues}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}"/>
                                         </Grid>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
@@ -955,8 +1011,8 @@
                                                     <ColumnDefinition Width="10"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <xctk:WatermarkTextBox Grid.Column="0" Text="{Binding Path=FilePath, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}" Watermark="Path to file"/>
-                                                <Button Grid.Column="2" HorizontalAlignment="Left" Style="{StaticResource NoChromeButton}" ToolTip="Browse to your program" Cursor="Hand" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}" Click="CommandPathBrowseButton_OnClick">
+                                                <xctk:WatermarkTextBox AutomationProperties.Name="{Binding Path=Watermark, RelativeSource={RelativeSource Self}}" Grid.Column="0" Text="{Binding Path=FilePath, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}" Watermark="Path to file"/>
+                                                <Button AutomationProperties.Name="Browse to program" Grid.Column="2" HorizontalAlignment="Left" Style="{StaticResource NoChromeButton}" ToolTip="Browse to your program" Cursor="Hand" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}" Click="CommandPathBrowseButton_OnClick">
                                                     <Image Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality">
                                                         <Image.Style>
                                                             <Style TargetType="Image">
@@ -982,7 +1038,7 @@
                                                 <RowDefinition Height="10"/>
                                             </Grid.RowDefinitions>
                                             <TextBlock Grid.Column="0" Grid.Row="0" Text="Args" Style="{StaticResource LabelTextBlockStyle}"/>
-                                            <xctk:WatermarkTextBox Grid.Column="1" Grid.Row="0" Text="{Binding Path=Arguments, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}" Watermark="Command line arguments"/>
+                                            <xctk:WatermarkTextBox AutomationProperties.Name="{Binding Path=Watermark, RelativeSource={RelativeSource Self}}" Grid.Column="1" Grid.Row="0" Text="{Binding Path=Arguments, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}" Watermark="Command line arguments"/>
                                         </Grid>
                                         <ContentPresenter Content="{StaticResource WaitForReturnGrid}"/>
                                         <ContentPresenter Content="{StaticResource HiddenGrid}"/>
@@ -1006,7 +1062,7 @@
                                                 <RowDefinition Height="10"/>
                                             </Grid.RowDefinitions>
                                             <TextBlock Grid.Column="0" Grid.Row="0" Text="Direction" Style="{StaticResource LabelTextBlockStyle}"/>
-                                            <ComboBox Grid.Column="1" Grid.Row="0" ItemsSource="{Binding Path=CursorDirectionValues}" SelectedItem="{Binding Path=Direction, NotifyOnTargetUpdated=True}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}"/>
+                                            <ComboBox AutomationProperties.Name="Cursor direction" Grid.Column="1" Grid.Row="0" ItemsSource="{Binding Path=CursorDirectionValues}" SelectedItem="{Binding Path=Direction, NotifyOnTargetUpdated=True}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}"/>
                                         </Grid>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
@@ -1032,6 +1088,26 @@
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="{StaticResource LabelColumnWidth}"/>
                                                 <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="{StaticResource LabelColumnHeight}"/>
+                                                <RowDefinition Height="10"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Column="0" Grid.Row="0" Text="Abortable" Style="{StaticResource LabelTextBlockStyle}"/>
+                                            <Grid Grid.Column="1" Grid.Row="0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="10"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <toggleSwitch:HorizontalToggleSwitch Grid.Column="0" IsChecked="{Binding Path=AbortIfUserActivityDetected, NotifyOnTargetUpdated=True, Mode=TwoWay}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}"/>
+                                                <Image Grid.Column="2" Source="/Resources/Help_Dark_64x64.png" ToolTipService.ShowDuration="{x:Static sys:Int32.MaxValue}" RenderOptions.BitmapScalingMode="HighQuality" ToolTip="Abort the action if user activity detected."/>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="{StaticResource LabelColumnWidth}"/>
+                                                <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="10"/>
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="10"/>
@@ -1042,7 +1118,7 @@
                                                 <RowDefinition Height="10"/>
                                             </Grid.RowDefinitions>
                                             <TextBlock Grid.Column="0" Grid.Row="0" Text="Speed" Style="{StaticResource LabelTextBlockStyle}"/>
-                                            <ComboBox Grid.Column="1" Grid.Row="0" SelectedItem="{Binding Path=Speed, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Path=CursorSpeedValues}">
+                                            <ComboBox AutomationProperties.Name="Speed" Grid.Column="1" Grid.Row="0" SelectedItem="{Binding Path=Speed, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Path=CursorSpeedValues}">
                                                 <ComboBox.Style>
                                                     <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
                                                         <Setter Property="IsEnabled" Value="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}"/>
@@ -1119,7 +1195,7 @@
                                                 <RowDefinition Height="{StaticResource LabelColumnHeight}"/>
                                                 <RowDefinition Height="10"/>
                                             </Grid.RowDefinitions>
-                                            <Button Grid.Column="1" Command="{Binding Path=StartCursorTrackingCommand, NotifyOnTargetUpdated=True}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}">
+                                            <Button AutomationProperties.Name="Track cursor" Grid.Column="1" Command="{Binding Path=StartCursorTrackingCommand, NotifyOnTargetUpdated=True}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}">
                                                 <Button.Style>
                                                     <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                                                         <Setter Property="Content" Value="Track"/>
@@ -1155,8 +1231,8 @@
                                                     <ColumnDefinition Width="10"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <xctk:WatermarkTextBox Grid.Column="0" Text="{Binding Path=ScriptPath, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}" Watermark="Path to .ps1 script"/>
-                                                <Button Grid.Column="2" HorizontalAlignment="Left" Style="{StaticResource NoChromeButton}" ToolTip="Browse to your PowerShell script" Cursor="Hand" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}" Click="ScriptPathBrowseButton_OnClick">
+                                                <xctk:WatermarkTextBox AutomationProperties.Name="{Binding Path=Watermark, RelativeSource={RelativeSource Self}}" Grid.Column="0" Text="{Binding Path=ScriptPath, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}" Watermark="Path to .ps1 script"/>
+                                                <Button AutomationProperties.Name="Browse to PowerShell script" Grid.Column="2" HorizontalAlignment="Left" Style="{StaticResource NoChromeButton}" ToolTip="Browse to your PowerShell script" Cursor="Hand" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}" Click="ScriptPathBrowseButton_OnClick">
                                                     <Image Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality">
                                                         <Image.Style>
                                                             <Style TargetType="Image">
@@ -1180,6 +1256,252 @@
                                         <ContentPresenter Content="{StaticResource TestButtonGrid}"/>
                                     </StackPanel>
                                 </DataTemplate>
+                                <DataTemplate DataType="{x:Type actions:KeystrokeAction}">
+                                    <StackPanel Orientation="Vertical">
+                                        <ContentPresenter Content="{StaticResource NameGrid}"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="{StaticResource LabelColumnWidth}"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="150"/>
+                                                <RowDefinition Height="10"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Column="0" Grid.Row="0" Text="Keys" Style="{StaticResource LabelTextBlockStyle}"/>
+                                            <Grid Grid.Column="1" Grid.Row="0">
+                                                <Grid.Resources>
+                                                    <converters:VirtualKeyToNameConverter x:Key="VirtualKeyToNameConverter"/>
+                                                    <converters:VirtualKeyToDescriptionConverter x:Key="VirtualKeyToDescriptionConverter"/>
+                                                </Grid.Resources>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="10"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ListView Grid.Column="0" ItemsSource="{Binding Path=Keystrokes, NotifyOnTargetUpdated=True}" SelectedIndex="{Binding Path=SelectedIndex, NotifyOnTargetUpdated=True}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}" SelectionMode="Single" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0" Background="Transparent" BorderThickness="1" BorderBrush="{StaticResource StandardBorderBrush}">
+                                                    <ListView.Resources>
+                                                        <Style TargetType="ScrollViewer" BasedOn="{StaticResource StandardScrollViewerStyle}"/>
+                                                        <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
+                                                            <Setter Property="Content" Value="{Binding Converter={StaticResource VirtualKeyToNameConverter}}"/>
+                                                        </Style>
+                                                    </ListView.Resources>
+                                                </ListView>
+                                                <StackPanel Grid.Column="2" VerticalAlignment="Center" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}">
+                                                    <Button AutomationProperties.Name="Move keystroke up" Style="{StaticResource TaskActionButtonStyle}" Command="{Binding Path=MoveUpSelectedKeystrokeCommand, NotifyOnTargetUpdated=True}">
+                                                        <Image>
+                                                            <Image.Style>
+                                                                <Style TargetType="Image" BasedOn="{StaticResource TaskActionButtonImageStyle}">
+                                                                    <Setter Property="Source" Value="/Resources/UpArrow_Dark_64x64.png"/>
+                                                                    <Style.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter Property="Source" Value="/Resources/UpArrow_Light_64x64.png"/>
+                                                                        </Trigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Image.Style>
+                                                        </Image>
+                                                    </Button>
+                                                    <Button AutomationProperties.Name="Add keystroke" Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=Window}}" classes:OpenContextMenuOnLeftClickBehavior.IsEnabled="True">
+                                                        <Button.Style>
+                                                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource TaskActionButtonStyle}">
+                                                                <Style.Triggers>
+                                                                    <EventTrigger RoutedEvent="Click">
+                                                                        <EventTrigger.Actions>
+                                                                            <BeginStoryboard>
+                                                                                <Storyboard>
+                                                                                    <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
+                                                                                        <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True"/>
+                                                                                    </BooleanAnimationUsingKeyFrames>
+                                                                                </Storyboard>
+                                                                            </BeginStoryboard>
+                                                                        </EventTrigger.Actions>
+                                                                    </EventTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+                                                        <Button.ContextMenu>
+                                                            <ContextMenu MaxHeight="300" StaysOpen="True" DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}" ItemsSource="{Binding Path=VirtualKeys}">
+                                                                <ContextMenu.Style>
+                                                                    <Style TargetType="ContextMenu" BasedOn="{StaticResource ContextMenuStyle}">
+                                                                        <Setter Property="Template">
+                                                                            <Setter.Value>
+                                                                                <ControlTemplate TargetType="ContextMenu">
+                                                                                    <Border x:Name="Border" Background="{StaticResource StandardWindowBackground}" BorderBrush="{StaticResource StandardBorderBrush}" BorderThickness="3">
+                                                                                        <ScrollViewer Style="{DynamicResource {ComponentResourceKey TypeInTargetAssembly=FrameworkElement, ResourceId=MenuScrollVirewer}}" Name="ContextMenuScrollViewer">
+                                                                                            <ItemsPresenter Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                                                                                        </ScrollViewer>
+                                                                                    </Border>
+                                                                                    <ControlTemplate.Triggers>
+                                                                                        <Trigger Property="HasDropShadow" Value="True">
+                                                                                            <Setter TargetName="Border" Property="Padding" Value="3"/>
+                                                                                            <Setter TargetName="Border" Property="BorderThickness" Value="3"/>
+                                                                                        </Trigger>
+                                                                                    </ControlTemplate.Triggers>
+                                                                                </ControlTemplate>
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                    </Style>
+                                                                </ContextMenu.Style>
+                                                                <ContextMenu.ItemContainerStyle>
+                                                                    <Style TargetType="MenuItem"/>
+                                                                </ContextMenu.ItemContainerStyle>
+                                                                <ContextMenu.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <TextBlock Text="{Binding Converter={StaticResource VirtualKeyToNameConverter}}" ToolTip="{Binding Converter={StaticResource VirtualKeyToDescriptionConverter}}" Tag="{Binding}" MouseDown="VirtualKeyTextBlock_MouseDown">
+                                                                            <TextBlock.Style>
+                                                                                <Style TargetType="TextBlock" BasedOn="{StaticResource LabelTextBlockStyle}"/>
+                                                                            </TextBlock.Style>
+                                                                        </TextBlock>
+                                                                    </DataTemplate>
+                                                                </ContextMenu.ItemTemplate>
+                                                            </ContextMenu>
+                                                        </Button.ContextMenu>
+                                                        <Image>
+                                                            <Image.Style>
+                                                                <Style TargetType="Image" BasedOn="{StaticResource TaskActionButtonImageStyle}">
+                                                                    <Setter Property="Source" Value="/Resources/ActionsAdd_Dark_64x64.png"/>
+                                                                    <Style.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter Property="Source" Value="/Resources/ActionsAdd_Light_64x64.png"/>
+                                                                        </Trigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Image.Style>
+                                                        </Image>
+                                                    </Button>
+                                                    <Button AutomationProperties.Name="Remove selected keystroke" Style="{StaticResource TaskActionButtonStyle}" Command="{Binding Path=RemoveSelectedKeystrokeCommand, NotifyOnTargetUpdated=True}">
+                                                        <Image>
+                                                            <Image.Style>
+                                                                <Style TargetType="Image" BasedOn="{StaticResource TaskActionButtonImageStyle}">
+                                                                    <Setter Property="Source" Value="/Resources/ActionsRemove_Dark_64x64.png"/>
+                                                                    <Style.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter Property="Source" Value="/Resources/ActionsRemove_Light_64x64.png"/>
+                                                                        </Trigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Image.Style>
+                                                        </Image>
+                                                    </Button>
+                                                    <Button AutomationProperties.Name="Move keystroke down" Style="{StaticResource TaskActionButtonStyle}" Command="{Binding Path=MoveDownSelectedKeystrokeCommand, NotifyOnTargetUpdated=True}">
+                                                        <Image>
+                                                            <Image.Style>
+                                                                <Style TargetType="Image" BasedOn="{StaticResource TaskActionButtonImageStyle}">
+                                                                    <Setter Property="Source" Value="/Resources/DownArrow_Dark_64x64.png"/>
+                                                                    <Style.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter Property="Source" Value="/Resources/DownArrow_Light_64x64.png"/>
+                                                                        </Trigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Image.Style>
+                                                        </Image>
+                                                    </Button>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="{StaticResource LabelColumnWidth}"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="{StaticResource LabelColumnHeight}"/>
+                                                <RowDefinition Height="10"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Column="0" Grid.Row="0" Text="Method" Style="{StaticResource LabelTextBlockStyle}"/>
+                                            <ComboBox AutomationProperties.Name="Input method type" Grid.Column="1" Grid.Row="0" SelectedItem="{Binding Path=Method, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Path=InputMethodValues}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.Style>
+                                                <Style TargetType="Grid">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Path=Method, NotifyOnTargetUpdated=True}" Value="Sequential">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Grid.Style>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="{StaticResource LabelColumnWidth}"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="{StaticResource LabelColumnHeight}"/>
+                                                <RowDefinition Height="10"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Column="0" Grid.Row="0" Text="Pause" Style="{StaticResource LabelTextBlockStyle}"/>
+                                            <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal">
+                                                <StackPanel.Resources>
+                                                    <Style TargetType="TextBlock" BasedOn="{StaticResource LabelTextBlockStyle}">
+                                                        <Setter Property="Margin" Value="5,0,5,0"/>
+                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                        <Style.Triggers>
+                                                            <MultiDataTrigger>
+                                                                <MultiDataTrigger.Conditions>
+                                                                    <Condition Binding="{Binding Path=Pause, NotifyOnTargetUpdated=True}" Value="True"/>
+                                                                    <Condition Binding="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}" Value="True"/>
+                                                                </MultiDataTrigger.Conditions>
+                                                                <Setter Property="IsEnabled" Value="True"/>
+                                                            </MultiDataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </StackPanel.Resources>
+                                                <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding Path=Pause, NotifyOnTargetUpdated=True, Mode=TwoWay}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}"/>
+                                                <TextBlock Text="for"/>
+                                                <xctk:DecimalUpDown Value="{Binding Path=PauseInterval, NotifyOnTargetUpdated=True}" Increment="0.01" Minimum="0.001" Maximum="9999">
+                                                    <xctk:DecimalUpDown.Style>
+                                                        <Style TargetType="xctk:DecimalUpDown" BasedOn="{StaticResource {x:Type xctk:DecimalUpDown}}">
+                                                            <Setter Property="IsEnabled" Value="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Path=Pause, NotifyOnTargetUpdated=True}" Value="False">
+                                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </xctk:DecimalUpDown.Style>
+                                                </xctk:DecimalUpDown>
+                                                <TextBlock Text="seconds"/>
+                                            </StackPanel>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.Style>
+                                                <Style TargetType="Grid">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Path=Method, NotifyOnTargetUpdated=True}" Value="Sequential">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Grid.Style>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="{StaticResource LabelColumnWidth}"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="{StaticResource LabelColumnHeight}"/>
+                                                <RowDefinition Height="10"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Column="0" Grid.Row="0" Text="Abortable" Style="{StaticResource LabelTextBlockStyle}"/>
+                                            <Grid Grid.Column="1" Grid.Row="0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="10"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <toggleSwitch:HorizontalToggleSwitch Grid.Column="0" IsChecked="{Binding Path=AbortIfUserActivityDetected, NotifyOnTargetUpdated=True, Mode=TwoWay}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}"/>
+                                                <Image Grid.Column="2" Source="/Resources/Help_Dark_64x64.png" ToolTipService.ShowDuration="{x:Static sys:Int32.MaxValue}" RenderOptions.BitmapScalingMode="HighQuality" ToolTip="Abort the action if user activity detected."/>
+                                            </Grid>
+                                        </Grid>
+                                        <ContentPresenter Content="{StaticResource TriggerGrid}"/>
+                                        <ContentPresenter Content="{StaticResource RepeatGrid}"/>
+                                        <ContentPresenter Content="{StaticResource EnabledGrid}"/>
+                                        <ContentPresenter Content="{StaticResource TestButtonGrid}"/>
+                                    </StackPanel>
+                                </DataTemplate>
                                 <DataTemplate DataType="{x:Type actions:ScrollMouseAction}">
                                     <StackPanel Orientation="Vertical">
                                         <ContentPresenter Content="{StaticResource NameGrid}"/>
@@ -1194,7 +1516,7 @@
                                                 <RowDefinition Height="10"/>
                                             </Grid.RowDefinitions>
                                             <TextBlock Grid.Column="0" Grid.Row="0" Text="Direction" Style="{StaticResource LabelTextBlockStyle}"/>
-                                            <ComboBox Grid.Column="1" Grid.Row="0" ItemsSource="{Binding Path=WheelDirectionValues}" SelectedItem="{Binding Path=Direction, NotifyOnTargetUpdated=True}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}"/>
+                                            <ComboBox AutomationProperties.Name="Wheel direction" Grid.Column="1" Grid.Row="0" ItemsSource="{Binding Path=WheelDirectionValues}" SelectedItem="{Binding Path=Direction, NotifyOnTargetUpdated=True}" IsEnabled="{Binding Path=IsEnabled, NotifyOnTargetUpdated=True}"/>
                                         </Grid>
                                         <ContentPresenter Content="{StaticResource TriggerGrid}"/>
                                         <ContentPresenter Content="{StaticResource RepeatGrid}"/>
@@ -1267,7 +1589,7 @@
                             </ContentPresenter.Resources>
                         </ContentPresenter>
                     </Grid>
-                    <ed:Callout AnchorPoint="1.118,-0.5" CalloutStyle="RoundedRectangle" Fill="{StaticResource StandardWindowBackground}" VerticalAlignment="Center" FontSize="14" Height="58" Margin="97,92,328,0" Stroke="{StaticResource StandardLightTextSolidColorBrush}" StrokeThickness="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                    <ed:Callout AnchorPoint="-0.171,1.118" CalloutStyle="RoundedRectangle" Fill="{StaticResource StandardWindowBackground}" VerticalAlignment="Center" FontSize="14" Height="58" Margin="72,255,355,0" Stroke="{StaticResource StandardLightTextSolidColorBrush}" StrokeThickness="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
                         <ed:Callout.Content>
                             <StackPanel>
                                 <TextBlock Text="Click here to add actions" Foreground="{StaticResource StandardLightTextSolidColorBrush}" Background="Transparent" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="10"/>
@@ -1307,7 +1629,7 @@
                     </ed:Callout>
                 </Grid>
             </TabItem>
-            <TabItem>
+            <TabItem AutomationProperties.Name="Behaviour">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <Image>
@@ -1334,7 +1656,7 @@
                             <converters:BoolToIndexConverter x:Key="BoolToIndexConverter"/>
                         </StackPanel.Resources>
                         <TextBlock Text="Repeat actions" Style="{StaticResource LabelTextBlockStyle}" Margin="0,0,5,0"/>
-                        <ComboBox SelectedIndex="{Binding Path=Settings.RandomInterval, Converter={StaticResource BoolToIndexConverter}}">
+                        <ComboBox AutomationProperties.Name="Random interval type" SelectedIndex="{Binding Path=Settings.RandomInterval, Converter={StaticResource BoolToIndexConverter}}">
                             <ComboBoxItem Content="randomly"/>
                             <ComboBoxItem Content="every"/>
                         </ComboBox>
@@ -1816,10 +2138,10 @@
                                 <ColumnDefinition Width="20"/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <!--<xctk:WatermarkTextBox Grid.Column="0" Grid.Row="0" Text="{Binding Path=Settings.LogPath, NotifyOnTargetUpdated=True}" Watermark="Log file path"/>-->
-                            <ComboBox Grid.Column="0" Width="100" SelectedItem="{Binding Path=Settings.LogLevel, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Path=LogEventLevels}"/>
-                            <Button Grid.Column="2" Content="Open" Click="OpenLogButton_Click"/>
-                            <Button Grid.Column="4" Content="Follow" Click="FollowLogButton_Click"/>
+                            <!--<xctk:WatermarkTextBox AutomationProperties.Name="{Binding Path=Watermark, RelativeSource={RelativeSource Self}}" Grid.Column="0" Grid.Row="0" Text="{Binding Path=Settings.LogPath, NotifyOnTargetUpdated=True}" Watermark="Log file path"/>-->
+                            <ComboBox AutomationProperties.Name="Log level" Grid.Column="0" Width="100" SelectedItem="{Binding Path=Settings.LogLevel, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Path=LogEventLevels}"/>
+                            <Button AutomationProperties.Name="Open log" Grid.Column="2" Content="Open" Click="OpenLogButton_Click"/>
+                            <Button AutomationProperties.Name="Follow log" Grid.Column="4" Content="Follow" Click="FollowLogButton_Click"/>
                         </Grid>
                     </StackPanel>
                     <!--<StackPanel Style="{StaticResource OptionStackPanelStyle}">
@@ -1836,7 +2158,7 @@
                     <!--make move mouse hidden/topmost when running-->
                 </StackPanel>
             </TabItem>
-            <TabItem>
+            <TabItem AutomationProperties.Name="Appearance">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <Image>
@@ -1967,7 +2289,7 @@
                             </Grid.ColumnDefinitions>
                             <toggleSwitch:HorizontalToggleSwitch Grid.Column="0" IsChecked="{Binding Path=Settings.OverrideWindowTitle, NotifyOnTargetUpdated=True, Mode=TwoWay}"/>
                             <TextBlock Grid.Column="1" Margin="5,0,0,0" Text="Override window title" Style="{StaticResource LabelTextBlockStyle}"/>
-                            <xctk:WatermarkTextBox Grid.Column="3" Text="{Binding Path=Settings.WindowTitle, NotifyOnTargetUpdated=True}" Watermark="Window title" HorizontalAlignment="Stretch">
+                            <xctk:WatermarkTextBox AutomationProperties.Name="{Binding Path=Watermark, RelativeSource={RelativeSource Self}}" Grid.Column="3" Text="{Binding Path=Settings.WindowTitle, NotifyOnTargetUpdated=True}" Watermark="Window title" HorizontalAlignment="Stretch">
                                 <xctk:WatermarkTextBox.Style>
                                     <Style TargetType="xctk:WatermarkTextBox" BasedOn="{StaticResource {x:Type xctk:WatermarkTextBox}}">
                                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -2071,7 +2393,7 @@
                             </Grid.ColumnDefinitions>
                             <toggleSwitch:HorizontalToggleSwitch Grid.Column="0" IsChecked="{Binding Path=Settings.OverrideIcon, NotifyOnTargetUpdated=True, Mode=TwoWay}"/>
                             <TextBlock Grid.Column="1" Margin="5,0,0,0" Text="Override icon" Style="{StaticResource LabelTextBlockStyle}"/>
-                            <xctk:WatermarkTextBox Grid.Column="3" Text="{Binding Path=Settings.IconPath, NotifyOnTargetUpdated=True}" Watermark="Icon Path" HorizontalAlignment="Stretch">
+                            <xctk:WatermarkTextBox AutomationProperties.Name="{Binding Path=Watermark, RelativeSource={RelativeSource Self}}" Grid.Column="3" Text="{Binding Path=Settings.IconPath, NotifyOnTargetUpdated=True}" Watermark="Icon Path" HorizontalAlignment="Stretch">
                                 <xctk:WatermarkTextBox.Style>
                                     <Style TargetType="xctk:WatermarkTextBox" BasedOn="{StaticResource {x:Type xctk:WatermarkTextBox}}">
                                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -2083,7 +2405,7 @@
                                     </Style>
                                 </xctk:WatermarkTextBox.Style>
                             </xctk:WatermarkTextBox>
-                            <Button Grid.Column="5" HorizontalAlignment="Left" Style="{StaticResource NoChromeButton}" ToolTip="Browse to icon" Cursor="Hand" Click="IconPathBrowseButton_OnClick">
+                            <Button AutomationProperties.Name="Browse to icon" Grid.Column="5" HorizontalAlignment="Left" Style="{StaticResource NoChromeButton}" ToolTip="Browse to icon" Cursor="Hand" Click="IconPathBrowseButton_OnClick">
                                 <Image Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality">
                                     <Image.Style>
                                         <Style TargetType="Image">
@@ -2105,7 +2427,7 @@
                     </StackPanel>
                 </Grid>
             </TabItem>
-            <TabItem>
+            <TabItem AutomationProperties.Name="Schedules">
                 <TabItem.Resources>
                     <DataTemplate DataType="{x:Type schedules:SimpleSchedule}">
                         <DataTemplate.Resources>
@@ -2145,7 +2467,7 @@
                                 <RowDefinition Height="10"/>
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Column="1" Grid.Row="1" Text="Action" Style="{StaticResource LabelTextBlockStyle}"/>
-                            <ComboBox Grid.Column="3" Grid.Row="1" SelectedItem="{Binding Path=Action, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Path=ScheduleActionValues}" HorizontalAlignment="Stretch"/>
+                            <ComboBox AutomationProperties.Name="Schedule action" Grid.Column="3" Grid.Row="1" SelectedItem="{Binding Path=Action, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Path=ScheduleActionValues}" HorizontalAlignment="Stretch"/>
                             <TextBlock Grid.Column="5" Grid.Row="1" Text="Time" Style="{StaticResource LabelTextBlockStyle}"/>
                             <xctk:TimeSpanUpDown Grid.Column="7" Grid.Row="1" Value="{Binding Path=Time, NotifyOnTargetUpdated=True, UpdateSourceTrigger=LostFocus}" Minimum="0:0:0" Maximum="23:59:59" HorizontalAlignment="Stretch"/>
                             <TextBlock Grid.Column="9" Grid.Row="1" Text="Delay" Style="{StaticResource LabelTextBlockStyle}"/>
@@ -2175,7 +2497,7 @@
                                 <toggleSwitch:HorizontalToggleSwitch Grid.Column="10" IsChecked="{Binding Path=Saturday, NotifyOnTargetUpdated=True, Mode=TwoWay}" UncheckedContent="Sat" CheckedContent="Sat"/>
                                 <toggleSwitch:HorizontalToggleSwitch Grid.Column="12" IsChecked="{Binding Path=Sunday, NotifyOnTargetUpdated=True, Mode=TwoWay}" UncheckedContent="Sun" CheckedContent="Sun"/>
                             </Grid>
-                            <Button Grid.Column="16" Grid.Row="1" Grid.RowSpan="3" Style="{StaticResource TaskActionButtonStyle}" Command="{Binding ElementName=ScheduleItemsControl, Path=DataContext.RemoveSelectedScheduleCommand, NotifyOnTargetUpdated=True}" CommandParameter="{Binding Path=Id}" Margin="0">
+                            <Button AutomationProperties.Name="Remove schedule" Grid.Column="16" Grid.Row="1" Grid.RowSpan="3" Style="{StaticResource TaskActionButtonStyle}" Command="{Binding ElementName=ScheduleItemsControl, Path=DataContext.RemoveSelectedScheduleCommand, NotifyOnTargetUpdated=True}" CommandParameter="{Binding Path=Id}" Margin="0">
                                 <Image>
                                     <Image.Style>
                                         <Style TargetType="Image" BasedOn="{StaticResource TaskActionButtonImageStyle}">
@@ -2215,9 +2537,9 @@
                                 <RowDefinition Height="10"/>
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Column="1" Grid.Row="1" Text="Action" Style="{StaticResource LabelTextBlockStyle}"/>
-                            <ComboBox Grid.Column="3" Grid.Row="1" SelectedItem="{Binding Path=Action, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Path=ScheduleActionValues}" HorizontalAlignment="Stretch"/>
+                            <ComboBox AutomationProperties.Name="Schedule action" Grid.Column="3" Grid.Row="1" SelectedItem="{Binding Path=Action, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Path=ScheduleActionValues}" HorizontalAlignment="Stretch"/>
                             <TextBlock Grid.Column="5" Grid.Row="1" Text="Schedule" Style="{StaticResource LabelTextBlockStyle}"/>
-                            <xctk:WatermarkTextBox Grid.Column="7" Grid.Row="1" Text="{Binding Path=Schedule, NotifyOnTargetUpdated=True}" Watermark="Cron Expression">
+                            <xctk:WatermarkTextBox AutomationProperties.Name="{Binding Path=Watermark, RelativeSource={RelativeSource Self}}" Grid.Column="7" Grid.Row="1" Text="{Binding Path=Schedule, NotifyOnTargetUpdated=True}" Watermark="Cron Expression">
                                 <xctk:WatermarkTextBox.Style>
                                     <Style TargetType="xctk:WatermarkTextBox" BasedOn="{StaticResource {x:Type xctk:WatermarkTextBox}}">
                                         <Style.Triggers>
@@ -2229,7 +2551,7 @@
                                     </Style>
                                 </xctk:WatermarkTextBox.Style>
                             </xctk:WatermarkTextBox>
-                            <Button Grid.Column="9" Grid.Row="1" Style="{StaticResource TaskActionButtonStyle}" Click="CronHelpButton_OnClick" Margin="0">
+                            <Button AutomationProperties.Name="Cron help" Grid.Column="9" Grid.Row="1" Style="{StaticResource TaskActionButtonStyle}" Click="CronHelpButton_OnClick" Margin="0">
                                 <Image>
                                     <Image.Style>
                                         <Style TargetType="Image" BasedOn="{StaticResource TaskActionButtonImageStyle}">
@@ -2243,7 +2565,7 @@
                                     </Image.Style>
                                 </Image>
                             </Button>
-                            <Button Grid.Column="11" Grid.Row="1" Style="{StaticResource TaskActionButtonStyle}" Command="{Binding ElementName=ScheduleItemsControl, Path=DataContext.RemoveSelectedScheduleCommand, NotifyOnTargetUpdated=True}" CommandParameter="{Binding Path=Id}" Margin="0">
+                            <Button AutomationProperties.Name="Remove schedule" Grid.Column="11" Grid.Row="1" Style="{StaticResource TaskActionButtonStyle}" Command="{Binding ElementName=ScheduleItemsControl, Path=DataContext.RemoveSelectedScheduleCommand, NotifyOnTargetUpdated=True}" CommandParameter="{Binding Path=Id}" Margin="0">
                                 <Image>
                                     <Image.Style>
                                         <Style TargetType="Image" BasedOn="{StaticResource TaskActionButtonImageStyle}">
@@ -2342,7 +2664,7 @@
                     </StackPanel>
                 </Grid>
             </TabItem>
-            <TabItem>
+            <TabItem AutomationProperties.Name="Blackouts">
                 <TabItem.Resources>
                     <DataTemplate DataType="{x:Type classes:Blackout}">
                         <DataTemplate.Resources>
@@ -2389,7 +2711,7 @@
                             <toggleSwitch:HorizontalToggleSwitch Grid.Column="5" Grid.Row="3" IsChecked="{Binding Path=Friday, NotifyOnTargetUpdated=True, Mode=TwoWay}" UncheckedContent="Fri" CheckedContent="Fri"/>
                             <toggleSwitch:HorizontalToggleSwitch Grid.Column="7" Grid.Row="3" IsChecked="{Binding Path=Saturday, NotifyOnTargetUpdated=True, Mode=TwoWay}" UncheckedContent="Sat" CheckedContent="Sat"/>
                             <toggleSwitch:HorizontalToggleSwitch Grid.Column="9" Grid.Row="3" IsChecked="{Binding Path=Sunday, NotifyOnTargetUpdated=True, Mode=TwoWay}" UncheckedContent="Sun" CheckedContent="Sun"/>
-                            <Button Grid.Column="13" Grid.Row="1" Grid.RowSpan="3" Style="{StaticResource TaskActionButtonStyle}" Command="{Binding ElementName=ScheduleItemsControl, Path=DataContext.RemoveSelectedBlackoutCommand, NotifyOnTargetUpdated=True}" CommandParameter="{Binding Path=Id}" Margin="0">
+                            <Button AutomationProperties.Name="Remove blackout" Grid.Column="13" Grid.Row="1" Grid.RowSpan="3" Style="{StaticResource TaskActionButtonStyle}" Command="{Binding ElementName=ScheduleItemsControl, Path=DataContext.RemoveSelectedBlackoutCommand, NotifyOnTargetUpdated=True}" CommandParameter="{Binding Path=Id}" Margin="0">
                                 <Image>
                                     <Image.Style>
                                         <Style TargetType="Image" BasedOn="{StaticResource TaskActionButtonImageStyle}">
@@ -2440,7 +2762,7 @@
                         <ItemsControl Name="BlackoutItemsControl" ItemsSource="{Binding Path=Settings.Blackouts, NotifyOnTargetUpdated=True}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0" Background="Transparent" BorderThickness="1" BorderBrush="{StaticResource StandardBorderBrush}"/>
                     </ScrollViewer>
                     <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                        <Button Command="{Binding Path=AddBlackoutCommand, NotifyOnTargetUpdated=True}" Style="{StaticResource TaskActionButtonStyle}">
+                        <Button AutomationProperties.Name="Add blackout" Command="{Binding Path=AddBlackoutCommand, NotifyOnTargetUpdated=True}" Style="{StaticResource TaskActionButtonStyle}">
                             <Image>
                                 <Image.Style>
                                     <Style TargetType="Image" BasedOn="{StaticResource TaskActionButtonImageStyle}">
@@ -2457,7 +2779,7 @@
                     </StackPanel>
                 </Grid>
             </TabItem>
-            <TabItem>
+            <TabItem AutomationProperties.Name="About">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <Image>
@@ -2484,6 +2806,8 @@
                             <Style TargetType="TextBlock" BasedOn="{StaticResource LabelTextBlockStyle}"/>
                         </Grid.Resources>
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="10"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="10"/>
                             <RowDefinition Height="Auto"/>
@@ -2524,12 +2848,14 @@
                         <TextBlock Grid.Row="10" Grid.Column="2" Text="{Binding Path=TwitterUrl, Mode=OneWay}" Style="{StaticResource HyperLinkTextBlockStyle}" MouseDown="TwitterLink_OnMouseDown"/>
                         <Image Grid.Row="12" Grid.Column="0" Source="/Resources/GitHub_Dark_64x64.png"/>
                         <TextBlock Grid.Row="12" Grid.Column="2" Text="{Binding Path=GitHubUrl, Mode=OneWay}" Style="{StaticResource HyperLinkTextBlockStyle}" MouseDown="GitHubLink_OnMouseDown"/>
+                        <Image Grid.Row="14" Grid.Column="0" Source="/Resources/Timer_Dark_64x64.png"/>
+                        <TextBlock Grid.Row="14" Grid.Column="2" Text="{Binding Path=SystemIdleTime, Mode=OneWay, NotifyOnTargetUpdated=True, StringFormat='System Idle Time - {0:hh}h {0:mm}m {0:ss}s {0:fff}ms'}"/>
                     </Grid>
                     <Image Source="/Resources/Mouse.ico" HorizontalAlignment="Right" VerticalAlignment="Top" Width="96" Height="96"/>
                 </Grid>
             </TabItem>
         </TabControl>
-        <Button Content="Close" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,20,20" Click="CloseButton_OnClick"/>
+        <Button AutomationProperties.Name="Close settings" Content="Close" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,20,20" Click="CloseButton_OnClick"/>
         <Border BorderThickness="5" BorderBrush="{StaticResource StandardBorderBrush}"/>
     </Grid>
 </Window>

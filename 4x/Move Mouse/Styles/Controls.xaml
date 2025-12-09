@@ -92,6 +92,7 @@
         <Setter Property="Height" Value="17"/>
         <Setter Property="ThumbSize" Value="15"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="IsTabStop" Value="True"/>
     </Style>
     <Style TargetType="Button">
         <Style.Resources>
@@ -293,7 +294,7 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{StaticResource StandardLightTextSolidColorBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource StandardBorderBrush}"/>
-        <Setter Property="Width" Value="50"/>
+        <Setter Property="Width" Value="70"/>
         <Setter Property="Height" Value="22"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Style.Triggers>
@@ -562,8 +563,8 @@
     <Style TargetType="{x:Type ListViewItem}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="Padding" Value="4,1"/>
-        <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-        <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+        <!--<Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+        <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>-->
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="1"/>

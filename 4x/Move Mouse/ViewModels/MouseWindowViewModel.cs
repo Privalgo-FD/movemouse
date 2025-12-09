@@ -650,6 +650,7 @@ namespace ellabi.ViewModels
                 {
                     var executionId = _activeExecutionId;
                     var lastInputTime = StaticCode.GetLastInputTime();
+                    var actionAborted = false;
                     IEnumerable<ActionBase> actions = null;
 
                     if (_firstPass)
@@ -671,9 +672,10 @@ namespace ellabi.ViewModels
 
                                     foreach (var action in actions)
                                     {
-                                        if (_activeExecutionId.Equals(executionId))
+                                        if (!actionAborted && _activeExecutionId.Equals(executionId))
                                         {
                                             action.Execute();
+                                            actionAborted = action.Aborted;
                                         }
                                     }
                                 }
@@ -694,9 +696,10 @@ namespace ellabi.ViewModels
 
                                         foreach (var action in actions)
                                         {
-                                            if (_activeExecutionId.Equals(executionId))
+                                            if (!actionAborted && _activeExecutionId.Equals(executionId))
                                             {
                                                 action.Execute();
+                                                actionAborted = action.Aborted;
                                             }
                                         }
                                     }
@@ -713,14 +716,21 @@ namespace ellabi.ViewModels
                                 CurrentState = MouseState.Locked;
                             }
 
-                            if (_activeExecutionId.Equals(executionId) && (CurrentState.Equals(MouseState.Locked) || CurrentState.Equals(MouseState.Sleeping) || (!_firstPass && SettingsVm.Settings.Actions.Any(action => action.IsValid && action.IsEnabled && action.Trigger.Equals(trigger) && action.Repeat && ((action.RepeatMode == ActionBase.IntervalRepeatMode.Forever) || ((action.RepeatMode == ActionBase.IntervalRepeatMode.Throttle) && (action.IntervalExecutionCount < action.IntervalThrottle)))))))
+                            if (actionAborted)
                             {
-                                Start();
+                                Stop((SettingsVm.Settings.AutoPause && SettingsVm.Settings.AutoResume) ? MouseState.Paused : MouseState.Idle);
                             }
                             else
                             {
-                                Stop(MouseState.Idle);
-                                ShowNotification("Automatically stopping as there are no actions that are configured to repeat forever at each interval.");
+                                if (_activeExecutionId.Equals(executionId) && (CurrentState.Equals(MouseState.Locked) || CurrentState.Equals(MouseState.Sleeping) || (!_firstPass && SettingsVm.Settings.Actions.Any(action => action.IsValid && action.IsEnabled && action.Trigger.Equals(trigger) && action.Repeat && ((action.RepeatMode == ActionBase.IntervalRepeatMode.Forever) || ((action.RepeatMode == ActionBase.IntervalRepeatMode.Throttle) && (action.IntervalExecutionCount < action.IntervalThrottle)))))))
+                                {
+                                    Start();
+                                }
+                                else
+                                {
+                                    Stop(MouseState.Idle);
+                                    ShowNotification("Automatically stopping as there are no actions that are configured to repeat forever at each interval.");
+                                }
                             }
 
                             break;
@@ -731,9 +741,10 @@ namespace ellabi.ViewModels
 
                                 foreach (var action in actions)
                                 {
-                                    if (_activeExecutionId.Equals(executionId))
+                                    if (!actionAborted && _activeExecutionId.Equals(executionId))
                                     {
                                         action.Execute();
+                                        actionAborted = action.Aborted;
                                     }
                                 }
                             }
@@ -1062,13 +1073,14 @@ namespace ellabi.ViewModels
             try
             {
                 RestoreVolume();
-                CleanupJobs();
+                Task.WaitAll(new[] { CleanupJobs() });
                 StaticCode.ScheduleArrived -= StaticCode_ScheduleArrived;
                 //StaticCode.ThemeUpdated -= StaticCode_ThemeUpdated;
                 StaticCode.UpdateAvailablityChanged -= StaticCode_UpdateAvailablityChanged;
                 StaticCode.RefreshSchedules -= StaticCode_RefreshSchedules;
                 SystemEvents.SessionSwitch -= SystemEvents_SessionSwitch;
                 SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
+                SettingsVm.Dispose();
             }
             catch (Exception ex)
             {

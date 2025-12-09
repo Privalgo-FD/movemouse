@@ -551,12 +551,13 @@ namespace ellabi.Classes
         }
 
         [XmlArrayItem(Type = typeof(ActionBase)),
-         XmlArrayItem(Type = typeof(MoveMouseCursorAction)),
-         XmlArrayItem(Type = typeof(ClickMouseAction)),
-         XmlArrayItem(Type = typeof(ScriptAction)),
-         XmlArrayItem(Type = typeof(PositionMouseCursorAction)),
          XmlArrayItem(Type = typeof(ActivateApplicationAction)),
+         XmlArrayItem(Type = typeof(ClickMouseAction)),
          XmlArrayItem(Type = typeof(CommandAction)),
+         XmlArrayItem(Type = typeof(KeystrokeAction)),
+         XmlArrayItem(Type = typeof(MoveMouseCursorAction)),
+         XmlArrayItem(Type = typeof(PositionMouseCursorAction)),
+         XmlArrayItem(Type = typeof(ScriptAction)),
          XmlArrayItem(Type = typeof(ScrollMouseAction)),
          XmlArrayItem(Type = typeof(SleepAction))]
         public ActionBase[] Actions

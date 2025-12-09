@@ -2,18 +2,12 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
-// ReSharper disable InconsistentNaming
-// ReSharper disable MemberCanBePrivate.Local
-// ReSharper disable FieldCanBeMadeReadOnly.Local
+using static ellabi.Wrappers.NativeMethods;
 
 namespace ellabi.Wrappers
 {
     public class NativeMethods
     {
-        //public const int WH_KEYBOARD_LL = 13;
-
-        //public delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
-
         [Flags]
         public enum MouseEventFlags
         {
@@ -29,6 +23,24 @@ namespace ellabi.Wrappers
             HWHEEL = 0x00001000,
             XDOWN = 0x00000080,
             XUP = 0x00000100
+        }
+
+        [Flags]
+        public enum KeyEventFlags
+        {
+            KEYDOWN = 0x0000,
+            EXTENDEDKEY = 0x0001,
+            KEYUP = 0x0002,
+            UNICODE = 0x0004,
+            SCANCODE = 0x0008
+        }
+
+        [Flags]
+        public enum InputType
+        {
+            Mouse = 0,
+            Keyboard = 1,
+            Hardware = 2
         }
 
         [Flags]
@@ -85,7 +97,7 @@ namespace ellabi.Wrappers
         public struct INPUT
         {
             public int type;
-            public MOUSEINPUT mi;
+            public InputUnion u;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -96,7 +108,25 @@ namespace ellabi.Wrappers
             public int mouseData;
             public MouseEventFlags dwFlags;
             public uint time;
-            public UIntPtr dwExtraInfo;
+            public IntPtr dwExtraInfo;
+        }
+
+        //[StructLayout(LayoutKind.Sequential)]
+        //public struct KEYBDINPUT
+        //{
+        //    public ushort wVk;
+        //    public ushort wScan;
+        //    public KeyEventFlags dwFlags;
+        //    public uint time;
+        //    public IntPtr dwExtraInfo;
+        //}
+
+        [StructLayout(LayoutKind.Explicit)]
+        public struct InputUnion
+        {
+            [FieldOffset(0)] public MOUSEINPUT mi;
+            //[FieldOffset(0)] public KEYBDINPUT ki;
+            //[FieldOffset(0)] public HardwareInput hi;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -121,8 +151,11 @@ namespace ellabi.Wrappers
         [DllImport("user32.dll")]
         public static extern uint SendInput(
             uint nInputs,
-            ref INPUT pInputs,
+            INPUT[] pInputs,
             int cbSize);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetMessageExtraInfo();
 
         [DllImport("User32.dll")]
         public static extern bool SetCursorPos(
@@ -143,6 +176,13 @@ namespace ellabi.Wrappers
             uint dx,
             uint dy,
             uint dwData,
+            int dwExtraInfo);
+
+        [DllImport("user32.dll")]
+        public static extern void keybd_event(
+            byte bVk,
+            byte bScan,
+            uint dwFlags,
             int dwExtraInfo);
 
         [DllImport("user32.dll", SetLastError = true)]

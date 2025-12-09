@@ -6,35 +6,44 @@ using ellabi.Utilities;
 using Serilog.Events;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Timers;
 using System.Xml.Serialization;
 using Windows.ApplicationModel;
+using Windows.System;
 
 namespace ellabi.ViewModels
 {
-    internal class SettingsWindowViewModel : INotifyPropertyChanged
+    internal class SettingsWindowViewModel : INotifyPropertyChanged, IDisposable
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
         private Settings _settings;
         private ActionBase _selectedAction;
         private RelayCommand _removeSelectedActionCommand;
+        private RelayCommand _copySelectedActionCommand;
         private RelayCommand _moveUpSelectedActionCommand;
         private RelayCommand _moveDownSelectedActionCommand;
         private RelayCommand _removeSelectedScheduleCommand;
         private RelayCommand _addBlackoutCommand;
         private RelayCommand _removeSelectedBlackoutCommand;
         private StartupTaskState _launchAtStartup;
+        private Timer _updateSystemIdleTimeTimer;
+        private object _settingsLock = new object();
 
         public Settings Settings => _settings ?? (_settings = ReadSettings());
 
+        //public ObservableCollection<VirtualKey> VirtualKeys => new ObservableCollection<VirtualKey>(VirtualKey.GetVirtualKeys());
+        public ObservableCollection<int> VirtualKeys => new ObservableCollection<int>(StaticCode.VirtualKeys.Value.Keys);
+
         public ActionBase SelectedAction
         {
-            get => (_selectedAction == null) && (Settings.Actions != null) && Settings.Actions.Any() ? Settings.Actions.First() : _selectedAction;
+            get => _selectedAction;
             set
             {
                 _selectedAction = value;
@@ -48,6 +57,16 @@ namespace ellabi.ViewModels
             set
             {
                 _removeSelectedActionCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public RelayCommand CopySelectedActionCommand
+        {
+            get => _copySelectedActionCommand;
+            set
+            {
+                _copySelectedActionCommand = value;
                 OnPropertyChanged();
             }
         }
@@ -122,8 +141,9 @@ namespace ellabi.ViewModels
 
         public string Copyright => ((AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyCopyrightAttribute), false)).Copyright;
 
-        public IEnumerable<LogEventLevel> LogEventLevels => Enum.GetValues(typeof(LogEventLevel)).Cast<LogEventLevel>();
+        public TimeSpan SystemIdleTime => StaticCode.GetLastInputTime();
 
+        public IEnumerable<LogEventLevel> LogEventLevels => Enum.GetValues(typeof(LogEventLevel)).Cast<LogEventLevel>();
 
         public SettingsWindowViewModel()
         {
@@ -134,7 +154,9 @@ namespace ellabi.ViewModels
 
             StaticCode.Logger?.Here().Information($"WorkingDirectory = {StaticCode.WorkingDirectory}");
             ReadSettings();
+            SelectedAction = Settings.Actions.First();
             _removeSelectedActionCommand = new RelayCommand(param => RemoveSelectedAction(), param => CanRemoveSelectedAction());
+            _copySelectedActionCommand = new RelayCommand(param => CopySelectedAction(), param => CanCopySelectedAction());
             _moveUpSelectedActionCommand = new RelayCommand(param => MoveUpSelectedAction(), param => CanMoveUpSelectedAction());
             _moveDownSelectedActionCommand = new RelayCommand(param => MoveDownSelectedAction(), param => CanMoveDownSelectedAction());
             _removeSelectedScheduleCommand = new RelayCommand(RemoveSelectedSchedule);
@@ -142,6 +164,35 @@ namespace ellabi.ViewModels
             _removeSelectedBlackoutCommand = new RelayCommand(RemoveSelectedBlackout);
             Settings.PropertyChanged += Settings_PropertyChanged;
             RefreshStartupTask();
+            _updateSystemIdleTimeTimer = new Timer(250);
+            _updateSystemIdleTimeTimer.Elapsed += (sender, args) => OnPropertyChanged(nameof(SystemIdleTime));
+        }
+
+        public void AddKeystroke(int key)
+        {
+            StaticCode.Logger?.Here().Debug(key.ToString());
+
+            try
+            {
+                if (SelectedAction is KeystrokeAction keystrokeAction)
+                {
+                    keystrokeAction.AddKeystroke(key);
+                }
+            }
+            catch (Exception ex)
+            {
+                StaticCode.Logger?.Here().Error(ex.Message);
+            }
+        }
+
+        public void StartSystemIdleTimer()
+        {
+            _updateSystemIdleTimeTimer.Start();
+        }
+
+        public void StopSystemIdleTimer()
+        {
+            _updateSystemIdleTimeTimer.Stop();
         }
 
         public async void RefreshStartupTask()
@@ -266,45 +317,68 @@ namespace ellabi.ViewModels
         }
 
         private void SaveSettings(Settings settings)
+        { 
+           System.Threading.ThreadPool.QueueUserWorkItem(SaveSettingsThread, settings);
+        }
+
+        private void SaveSettingsThread(object settings)
         {
             StaticCode.Logger?.Here().Debug(StaticCode.SettingsXmlPath);
 
-            try
+            lock (_settingsLock)
             {
-                var xs = new XmlSerializer(typeof(Settings));
-                var sw = new StreamWriter(StaticCode.SettingsXmlPath, false);
-                xs.Serialize(sw, settings);
-                sw.Close();
-            }
-            catch (Exception ex)
-            {
-                StaticCode.Logger?.Here().Error(ex.Message);
+                StreamWriter sw = null;
+
+                try
+                {
+                    var xs = XmlSerializer.FromTypes(new[] { typeof(Settings) })[0];
+
+                    using (sw = new StreamWriter(StaticCode.SettingsXmlPath, false))
+                    {
+                        xs.Serialize(sw, settings);
+                        sw.Flush();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    StaticCode.Logger?.Here().Error(ex.Message);
+                }
+                finally
+                {
+                    sw?.Close();
+                }
+
+                System.Threading.Thread.Sleep(1000); // Ensure file is written before next read
             }
         }
 
         private Settings ReadSettings()
         {
             StaticCode.Logger?.Here().Debug(StaticCode.SettingsXmlPath);
-            StreamReader sr = null;
 
-            try
+            lock (_settingsLock)
             {
-                if (File.Exists(StaticCode.SettingsXmlPath))
+                StreamReader sr = null;
+
+                try
                 {
-                    var xs = new XmlSerializer(typeof(Settings));
-                    sr = new StreamReader(StaticCode.SettingsXmlPath);
-                    StaticCode.Logger?.Here().Debug(sr.ReadToEnd());
-                    sr.BaseStream.Seek(0, SeekOrigin.Begin);
-                    return (Settings)xs.Deserialize(sr);
+                    if (File.Exists(StaticCode.SettingsXmlPath))
+                    {
+                        var xs = XmlSerializer.FromTypes(new[] { typeof(Settings) })[0];
+                        sr = new StreamReader(StaticCode.SettingsXmlPath);
+                        StaticCode.Logger?.Here().Debug(sr.ReadToEnd());
+                        sr.BaseStream.Seek(0, SeekOrigin.Begin);
+                        return (Settings)xs.Deserialize(sr);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                StaticCode.Logger?.Here().Error(ex.Message);
-            }
-            finally
-            {
-                sr?.Close();
+                catch (Exception ex)
+                {
+                    StaticCode.Logger?.Here().Error(ex.Message);
+                }
+                finally
+                {
+                    sr?.Close();
+                }
             }
 
             return new Settings();
@@ -317,6 +391,20 @@ namespace ellabi.ViewModels
             try
             {
                 var action = (ActionBase)Activator.CreateInstance(actionType);
+                InsertAction(action);
+            }
+            catch (Exception ex)
+            {
+                StaticCode.Logger?.Here().Error(ex.Message);
+            }
+        }
+
+        private void InsertAction(ActionBase action)
+        {
+            StaticCode.Logger?.Here().Debug(action.ToString());
+
+            try
+            {
                 var actions = (Settings.Actions == null) ? new List<ActionBase>() : new List<ActionBase>(Settings.Actions);
 
                 if (SelectedAction != null)
@@ -342,7 +430,17 @@ namespace ellabi.ViewModels
             try
             {
                 StaticCode.Logger?.Here().Debug(SelectedAction.ToString());
+                var previousActionIndex = Settings.Actions.ToList().FindIndex(t => t.Id.Equals(SelectedAction.Id)) - 1;
                 Settings.Actions = new List<ActionBase>(Settings.Actions.Except(new[] { SelectedAction })).ToArray();
+
+                if (previousActionIndex > -1)
+                {
+                    SelectedAction = Settings.Actions[previousActionIndex];
+                }
+                else
+                {
+                    SelectedAction = Settings.Actions.First();
+                }
             }
             catch (Exception ex)
             {
@@ -350,9 +448,43 @@ namespace ellabi.ViewModels
             }
         }
 
-        private bool CanRemoveSelectedAction()
+        private bool CanRemoveSelectedAction() => (SelectedAction != null) && (Settings.Actions.Length > 1);
+
+        public void CopySelectedAction()
         {
-            return (SelectedAction != null) && (Settings.Actions.Length > 1);
+            try
+            {
+                StaticCode.Logger?.Here().Debug(SelectedAction.ToString());
+                var copy = DeepCopy(SelectedAction);
+                copy.Id = Guid.NewGuid();
+                InsertAction(copy);
+            }
+            catch (Exception ex)
+            {
+                StaticCode.Logger?.Here().Error(ex.Message);
+            }
+        }
+
+        private bool CanCopySelectedAction() => SelectedAction != null;
+
+        private ActionBase DeepCopy<ActionBase>(ActionBase action)
+        {
+            try
+            {
+                using (var ms = new MemoryStream())
+                {
+                    var serializer = new XmlSerializer(action.GetType());
+                    serializer.Serialize(ms, action);
+                    ms.Position = 0;
+                    return (ActionBase)serializer.Deserialize(ms);
+                }
+            }
+            catch (Exception ex)
+            {
+                StaticCode.Logger?.Here().Error(ex.Message);
+            }
+
+            return default;
         }
 
         private void MoveUpSelectedAction()
@@ -515,6 +647,13 @@ namespace ellabi.ViewModels
             {
                 StaticCode.Logger?.Here().Error(ex.Message);
             }
+        }
+
+        public void Dispose()
+        {
+            _updateSystemIdleTimeTimer?.Stop();
+            _updateSystemIdleTimeTimer.Elapsed -= (sender, args) => OnPropertyChanged(nameof(SystemIdleTime));
+            _updateSystemIdleTimeTimer?.Dispose();
         }
     }
 }

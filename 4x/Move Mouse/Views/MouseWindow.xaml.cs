@@ -11,7 +11,6 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media.Animation;
 using System.Windows.Shell;
-using static System.Windows.Forms.AxHost;
 
 namespace ellabi.Views
 {
@@ -341,6 +340,20 @@ namespace ellabi.Views
             }
         }
 
+        private void MinimiseButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            StaticCode.Logger?.Here().Debug(String.Empty);
+
+            try
+            {
+               WindowState = WindowState.Minimized;
+            }
+            catch (Exception ex)
+            {
+                StaticCode.Logger?.Here().Error(ex.Message);
+            }
+        }
+
         private void MouseButton_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             StaticCode.Logger?.Here().Debug(String.Empty);
@@ -376,22 +389,21 @@ namespace ellabi.Views
                 {
                     if (_vm.SettingsVm.Settings.DisableButtonAnimation)
                     {
-                        StartInstantAnimation(ref FlyingSettingsButton, 1);
-                        //StartInstantAnimation(ref FlyingContactButton, 2);
-                        StartInstantAnimation(ref FlyingPayPalButton, 2);
-                        StartInstantAnimation(ref FlyingHelpButton, 3);
-                        StartInstantAnimation(ref FlyingTwitterButton, 4);
-                        StartInstantAnimation(ref FlyingCloseButton, 5);
+                        StartInstantAnimation(ref FlyingMinimiseButton, 1);
+                        StartInstantAnimation(ref FlyingSettingsButton, 2);
+                        StartInstantAnimation(ref FlyingPayPalButton, 3);
+                        StartInstantAnimation(ref FlyingTwitterButton, 4);   
+                        StartInstantAnimation(ref FlyingHelpButton, 5);
+                        StartInstantAnimation(ref FlyingCloseButton, 6);
                     }
                     else
                     {
-                        StartFlyingAnimation(ref FlyingSettingsButton, 1);
-                        //StartFlyingAnimation(ref FlyingContactButton, 2);
-                        StartFlyingAnimation(ref FlyingPayPalButton, 2);
-                        StartFlyingAnimation(ref FlyingHelpButton, 3);
-                        //StartFlyingAnimation(ref FlyingHomeButton, 3);
-                        StartFlyingAnimation(ref FlyingTwitterButton, 4);
-                        StartFlyingAnimation(ref FlyingCloseButton, 5);
+                        StartFlyingAnimation(ref FlyingMinimiseButton, 1);
+                        StartFlyingAnimation(ref FlyingSettingsButton, 2);
+                        StartFlyingAnimation(ref FlyingPayPalButton, 3);
+                        StartFlyingAnimation(ref FlyingTwitterButton, 4);      
+                        StartFlyingAnimation(ref FlyingHelpButton, 5);
+                        StartFlyingAnimation(ref FlyingCloseButton, 6);
                     }
                 }
 
@@ -505,11 +517,10 @@ namespace ellabi.Views
                     if (_hideButtons)
                     {
                         StartFadeOutAnimation(FlyingSettingsButton);
-                        //StartFadeOutAnimation(FlyingContactButton);
                         StartFadeOutAnimation(FlyingPayPalButton);
                         StartFadeOutAnimation(FlyingHelpButton);
-                        //StartFadeOutAnimation(FlyingHomeButton);
                         StartFadeOutAnimation(FlyingTwitterButton);
+                        StartFadeOutAnimation(FlyingMinimiseButton);
                         StartFadeOutAnimation(FlyingCloseButton);
                         _buttonsOnShow = false;
                     }

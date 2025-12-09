@@ -243,6 +243,26 @@ namespace ellabi.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Copy_Dark_64x64 {
+            get {
+                object obj = ResourceManager.GetObject("Copy_Dark_64x64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Copy_Light_64x64 {
+            get {
+                object obj = ResourceManager.GetObject("Copy_Light_64x64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Copyright_Dark_64x64 {
             get {
                 object obj = ResourceManager.GetObject("Copyright_Dark_64x64", resourceCulture);
@@ -383,6 +403,26 @@ namespace ellabi.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap KeystrokeAction_Dark_128x128 {
+            get {
+                object obj = ResourceManager.GetObject("KeystrokeAction_Dark_128x128", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap KeystrokeAction_Light_128x128 {
+            get {
+                object obj = ResourceManager.GetObject("KeystrokeAction_Light_128x128", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Mail_Dark_64x64 {
             get {
                 object obj = ResourceManager.GetObject("Mail_Dark_64x64", resourceCulture);
@@ -396,6 +436,26 @@ namespace ellabi.Properties {
         internal static System.Drawing.Bitmap Mail_Light_64x64 {
             get {
                 object obj = ResourceManager.GetObject("Mail_Light_64x64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Minimise_Dark_64x64 {
+            get {
+                object obj = ResourceManager.GetObject("Minimise_Dark_64x64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Minimise_Light_64x64 {
+            get {
+                object obj = ResourceManager.GetObject("Minimise_Light_64x64", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -666,6 +726,26 @@ namespace ellabi.Properties {
         internal static System.Drawing.Bitmap SleepAction_Light_128x128 {
             get {
                 object obj = ResourceManager.GetObject("SleepAction_Light_128x128", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Timer_Dark_64x64 {
+            get {
+                object obj = ResourceManager.GetObject("Timer_Dark_64x64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Timer_Light_64x64 {
+            get {
+                object obj = ResourceManager.GetObject("Timer_Light_64x64", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

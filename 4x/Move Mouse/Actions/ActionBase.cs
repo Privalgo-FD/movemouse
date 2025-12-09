@@ -21,6 +21,7 @@ namespace ellabi.Actions
         private int _intervalThrottle;
         private int _intervalExecutionCount;
         private bool _interruptsIdleTime;
+        private bool _aborted;
 
         public enum EventTrigger
         {
@@ -124,6 +125,17 @@ namespace ellabi.Actions
             set
             {
                 _interruptsIdleTime = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [XmlIgnore]
+        public bool Aborted
+        {
+            get => _aborted;
+            set
+            {
+                _aborted = value;
                 OnPropertyChanged();
             }
         }
