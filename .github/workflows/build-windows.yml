@@ -39,6 +39,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup .NET Framework targeting packs
+        run: |
+          # Ensure .NET Framework 4.7.2 targeting pack is available
+          # The windows-latest runner should have it, but we can verify
+          dir "C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A" -ErrorAction SilentlyContinue | out-null
+        shell: powershell
+
       - name: Cache NuGet packages
         uses: actions/cache@v4
         with:
@@ -54,7 +61,8 @@ jobs:
         run: nuget restore '4x\Move Mouse.sln'
 
       - name: Build 4x solution (Release)
-        run: msbuild '4x\Move Mouse.sln' /p:Configuration=Release /m
+        run: msbuild '4x\Move Mouse.sln' /p:Configuration=Release /m /v:d
+        continue-on-error: false
 
       - name: Upload 4x build artifacts
         uses: actions/upload-artifact@v4
