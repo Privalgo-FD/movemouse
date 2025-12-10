@@ -61,8 +61,14 @@ jobs:
         run: nuget restore '4x\Move Mouse.sln'
 
       - name: Build 4x solution (Release)
-        run: msbuild '4x\Move Mouse.sln' /p:Configuration=Release /m /v:d
-        continue-on-error: false
+        run: |
+          msbuild '4x\Move Mouse.sln' /p:Configuration=Release /m /v:detailed 2>&1 | tee build.log
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "Build failed. Last 100 lines of output:"
+            Get-Content build.log | Select-Object -Last 100
+            exit 1
+          }
+        shell: powershell
 
       - name: Upload 4x build artifacts
         uses: actions/upload-artifact@v4
