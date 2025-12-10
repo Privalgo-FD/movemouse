@@ -1,0 +1,187 @@
+name: Build Windows (4x + optional 3x)
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      include_3x:
+        description: 'Also build the legacy 3x solution'
+        required: false
+        default: 'false'
+
+jobs:
+  detect-changes:
+    name: Detect changed paths
+    runs-on: ubuntu-latest
+    outputs:
+      three_x: ${{ steps.filter.outputs.three_x }}
+      four_x: ${{ steps.filter.outputs.four_x }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect changes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            three_x:
+              - '3x/**'
+            four_x:
+              - '4x/**'
+
+  build-4x:
+    name: Build 4x (WPF .NET Framework)
+    runs-on: windows-latest
+    needs: detect-changes
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.nuget/packages
+            C:\\Users\\runneradmin\\.nuget\\packages
+            C:\\Users\\runner\\.nuget\\packages
+          key: nuget-4x-${{ runner.os }}-${{ hashFiles('4x/**/packages.config') }}
+          restore-keys: |
+            nuget-4x-${{ runner.os }}-
+
+      - name: Restore NuGet packages for 4x
+        run: nuget restore '4x\Move Mouse.sln'
+
+      - name: Build 4x solution (Release)
+        run: msbuild '4x\Move Mouse.sln' /p:Configuration=Release /m
+
+      - name: Upload 4x build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: MoveMouse-4x
+          path: '4x/Move Mouse/bin/Release/**'
+
+  build-3x:
+    name: Build 3x (optional legacy .NET 2.0 WinForms)
+    runs-on: windows-latest
+    needs: detect-changes
+    if: |
+      startsWith(github.event_name, 'workflow') && github.event_name == 'workflow_dispatch' && (github.event.inputs.include_3x == 'true')
+      || needs.detect-changes.outputs.three_x == 'true'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache NuGet packages (3x)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.nuget/packages
+            C:\\Users\\runneradmin\\.nuget\\packages
+            C:\\Users\\runner\\.nuget\\packages
+          key: nuget-3x-${{ runner.os }}-${{ hashFiles('3x/**/packages.config') }}
+          restore-keys: |
+            nuget-3x-${{ runner.os }}-
+
+      - name: Restore NuGet packages for 3x
+        run: nuget restore '3x\Move Mouse.sln'
+
+      - name: Build 3x solution (Release)
+        run: msbuild '3x\Move Mouse.sln' /p:Configuration=Release /m
+
+      - name: Upload 3x build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: MoveMouse-3x
+          path: '3x/Move Mouse/bin/Release/**'
+
+  package-and-release:
+    name: Package and create draft GitHub Release
+    runs-on: ubuntu-latest
+    needs: build-4x
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download 4x artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: MoveMouse-4x
+          path: release-artifacts/4x
+
+      - name: Attempt to download 3x artifact (optional)
+        uses: actions/download-artifact@v3
+        with:
+          name: MoveMouse-3x
+          path: release-artifacts/3x
+          if-no-files-found: warn
+
+      - name: Create combined ZIP
+        run: |
+          mkdir -p release-output
+          ZIP_NAME=MoveMouse-release-${{ github.run_number }}.zip
+          if [ -d "release-artifacts/4x" ]; then
+            (cd release-artifacts/4x && zip -r ../../release-output/$ZIP_NAME .)
+          fi
+          if [ -d "release-artifacts/3x" ]; then
+            (cd release-artifacts/3x && zip -r ../../release-output/$ZIP_NAME .)
+          fi
+          ls -l release-output
+
+      - name: Create draft GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: "Move Mouse ${{ github.run_number }}"
+          draft: true
+          body: |
+            Automated draft release created by CI for run ${{ github.run_number }}.
+
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: release-output/MoveMouse-release-${{ github.run_number }}.zip
+          asset_name: MoveMouse-release-${{ github.run_number }}.zip
+          asset_content_type: application/zip
+name: Build Windows .NET Framework
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Restore NuGet packages
+        run: |
+          nuget restore '4x\Move Mouse.sln'
+          nuget restore '3x\Move Mouse.sln'
+
+      - name: Build 4x (WPF, .NET Framework 4.7.2)
+        run: msbuild '4x\Move Mouse.sln' /p:Configuration=Release /m
+
+      - name: Build 3x (WinForms, .NET Framework 2.0)
+        run: msbuild '3x\Move Mouse.sln' /p:Configuration=Release /m
+
+      - name: Upload 4x build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: MoveMouse-4x
+          path: '4x/Move Mouse/bin/Release/**'
+
+      - name: Upload 3x build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: MoveMouse-3x
+          path: '3x/Move Mouse/bin/Release/**'
